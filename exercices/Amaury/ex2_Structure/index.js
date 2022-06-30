@@ -31,13 +31,12 @@ const listOfName = () => {
         names.push(name);
     }
     
-    let list = '<ul>';
+    
     for (el of names ) {
-        list += '<li>' + el + '</li>';
+        let li = document.createElement('li');
+        li.innerText = el;
+        ex3.append(li);
     }
-    list += '</ul>';
-
-    ex3.innerHTML = list;
 }
 
 formatDate();
