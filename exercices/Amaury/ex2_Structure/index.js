@@ -20,7 +20,7 @@ const formatDate = () => {
     let day = today.getDate();
     let month = today.getMonth();
     let dayName = today.getDay();
-    ex1.innerText += week[dayName - 1] + " " + day + " " + year[month] + ".";
+    ex1.innerText += week[dayName] + " " + day + " " + year[month] + ".";
 }
 
 const listOfName = () => {
