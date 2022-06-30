@@ -122,7 +122,6 @@ const cloneELem = donald.cloneNode();
 const compleCloneELem = donald.cloneNode(true);
 
 // !! si un child existe déjà il va juste le déplacer à sa nouvelle position.
-
 ulul.appendChild(compleCloneELem);
 ulul.appendChild(cloneELem);
 ulul.appendChild(compleCloneELem);
