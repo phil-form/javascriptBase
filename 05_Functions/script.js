@@ -78,3 +78,31 @@ function demoCallback(msg, cb)
 
 demoCallback("Bonjour", (v) => console.log(`${v} machin`));
 demoCallback("Bonjour", console.log);
+
+function filterTab(tab, cb)
+{
+    retTab = []
+    for(let i = 0; i < tab.length; i++)
+    {
+        if(cb && typeof(cb) === "function")
+        {
+            if(cb(tab[i]))
+            {
+                retTab.push(tab[i])
+            }
+        } else
+        {
+            if(tab[i] > 0)
+            {
+                retTab.push(tab[i]);
+            }
+        }
+    }
+    return retTab;
+}
+
+console.log(filterTab(tab));
+console.log(filterTab(tab, (val) => val % 2 !== 0));
+
+tab3 = [{ name: "test", date: new Date() }]
+console.log(filterTab(tab3, (val) => val.date <= Date.now()));
