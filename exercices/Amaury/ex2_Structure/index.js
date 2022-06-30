@@ -15,7 +15,7 @@ const isLeapYear = () => {
 
 const formatDate = () => {
     let today = new Date();
-    let week = ["Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi", "Dimanche"];
+    let week = ["Dimanche", "Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi"];
     let year = ["Janv", "Févr", "Mars", "Avri", "Mai", "Juin", "Juil", "Aout", "Sept", "Octo", "Déce"];
     let day = today.getDate();
     let month = today.getMonth();
