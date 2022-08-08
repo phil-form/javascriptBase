@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Form</title>
+</head>
+<body>
+    <form name="form1" method="post" action="">
+        <input name="lastname-input" type="text" placeholder="Nom">
+        <input name="firstname-input" type="text" placeholder="Prénom">
+        <input name="zipCode-input" type="text" placeholder="Code postal">
+        <button id="send-button">Envoyer</button>
+        <button id="autoComplete-button">Auto complete</button>
+        <button id="reset-button">Effacer</button>     
+    </form>
+
+    <div id="content">
+        <table>
+            <tr>
+              <th>Lastname</th>
+              <th>Firstname</th>
+              <th>Zip code</th>
+            </tr>
+        </table>
+    </div>
+
+    <script>
+        let datas = [];
+        const frm = document.forms.form1;
+
+        const sendBtn = document.querySelector("button#send-button");
+        sendBtn.addEventListener("click", (e) => {
+            e.preventDefault();
+
+            if (parseInt(frm.elements['zipCode-input'].value) <= 10000 && parseInt(frm.elements['zipCode-input'].value) >= 1000) {
+                const data = {
+                    lastname: frm.elements['lastname-input'].value,
+                    firstname: frm.elements['firstname-input'].value,
+                    zipCode: frm.elements['zipCode-input'].value
+                };
+                datas.push(data);
+                console.log(datas);
+                refreshTable();
+            } else {
+                const zipCodeInput = frm.elements['zipCode-input'];
+                zipCodeInput.value = 'Wrong code format';
+            }
+        });
+
+        const autoCompleteBtn = document.querySelector("button#autoComplete-button");
+        autoCompleteBtn.addEventListener("click", (e) => {
+            e.preventDefault();
+
+            frm.elements['lastname-input'].value = 'Crenier';
+            frm.elements['firstname-input'].value = 'Amaury';
+            frm.elements['zipCode-input'].value = '1331'
+        });
+
+        const resetBtn = document.querySelector("button#reset-button");
+        resetBtn.addEventListener("click", (e) => {
+            e.preventDefault();
+            datas = [];
+            refreshTable();
+        });
+
+        function refreshTable() {
+            const contentTable = document.querySelector('div#content table');
+            
+            contentTable.innerHTML = '<tr><th>Lastname</th><th>Firstname</th><th>Zip code</th></tr>';
+
+            datas.forEach((data) => {
+                const tr = document.createElement('tr');
+                const lastnameTd = document.createElement('td');
+                const firstnameTd = document.createElement('td');
+                const zipCodeTd = document.createElement('td');
+                lastnameTd.innerText = data.lastname;
+                firstnameTd.innerText = data.firstname;
+                zipCodeTd.innerText = data.zipCode;
+
+                tr.appendChild(lastnameTd);
+                tr.appendChild(firstnameTd);
+                tr.appendChild(zipCodeTd);
+
+                contentTable.appendChild(tr);
+            });
+        };
+    </script>
+</body>
+</html>
