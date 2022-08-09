@@ -1,4 +1,4 @@
-const products = [
+const productsSample = [
     {name: 'Chair', price: 25},
     {name: 'Table', price: 250},
     {name: 'Cupboard', price: 130}
@@ -31,8 +31,10 @@ document.addEventListener('DOMContentLoaded', () => {
             name: name,
             price: price
         };
-
+        
+        let products = getProducts();
         products.push(newProduct);
+        setProducts(products);
 
         listProducts(productsTable, totalPriceSpan, basketTable);
     });
@@ -43,6 +45,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
 const listProducts = (productsTable, totalPriceSpan, basketTable) => {
     productsTable.innerHTML = '';
+
+    let products = getProducts();
 
     products.forEach((product, index) => {
         
@@ -75,6 +79,15 @@ const listProducts = (productsTable, totalPriceSpan, basketTable) => {
     });
 };
 
+const getProducts = () => {
+    let products = localStorage.getItem('products');
+    return products != null ? JSON.parse(products) : [];
+};
+
+const setProducts = (data) => {
+    localStorage.setItem('products', JSON.stringify(data));
+};
+
 const getBasket = () => {
     let basket = localStorage.getItem('basket');
     return basket != null ? JSON.parse(basket) : [];
@@ -87,6 +100,7 @@ const setBasket = (data) => {
 const addToBasket = (index, quantity) => {
     let basket = getBasket();
 
+    let products = getProducts();
     let product = products[index];
     let price = quantity * product.price;
 
