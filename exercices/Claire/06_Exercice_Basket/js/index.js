@@ -6,7 +6,7 @@ const clearBasketBtn = document.getElementById('clear_basket');
 clearBasketBtn.addEventListener('click', (e) => {
     e.preventDefault();
     emptyBasket();
-    clearBasket();
+    refreshBasket();
 });
 
 populateProducts();

@@ -30,7 +30,7 @@ export function addToBasket(product, quantity) {
     let found = false;
     for(let item of basket) {
         if(item.product.name == product.name) {
-            item.quantity += 1;
+            item.quantity += quantity;
             found = true;
         }
     }
