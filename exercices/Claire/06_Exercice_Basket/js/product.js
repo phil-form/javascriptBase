@@ -29,6 +29,11 @@ export class Product {
         insertBtn.name = 'insert';
         insertBtn.value = 'Ajouter au panier';
         form.appendChild(insertBtn);
+        const deleteBtn = document.createElement('input');
+        deleteBtn.type = 'submit';
+        deleteBtn.name = 'delete';
+        deleteBtn.value = 'Delete product';
+        form.appendChild(deleteBtn);
         cellForm.appendChild(form);
 
         return tr;
@@ -36,8 +41,16 @@ export class Product {
 
 }
 
-export const products = [
-    new Product('Chaise', 25),
-    new Product('Table', 150),
-    new Product('Meuble TV', 250)
-];
+export function addProduct(name, price) {
+    products[name] = new Product(name, price);
+}
+
+export function deleteProduct(name) {
+    delete products[name];
+}
+
+export const products = {
+    'Chaise': new Product('Chaise', 25),
+    'Table': new Product('Table', 150),
+    'Meuble TV': new Product('Meuble TV', 250)
+};
