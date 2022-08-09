@@ -8,6 +8,12 @@
     <title>Basket</title>
 </head>
 <body>
+    <h1>Add a new product</h1>
+    <form name="add-product-form">
+        <input name="new-product-name-input" type="text" placeholder="Name">
+        <input name="new-product-price-input" type="number" placeholder="Price">
+        <input name="new-product-submit" type="submit" value="Add">
+    </form>
     <h1>Products description</h1>
     <table id="product-table-id">
         <thead>
@@ -34,6 +40,7 @@
     </table>
     <div>Total price: <span id="total-price-id"></span></div>
     <br>
-    <button id="reset-basket-id">Reset basket</button>
+    <h1>Reset the local storage</h1>
+    <button id="reset-storage-id">Reset Storage</button>
 </body>
 </html>
