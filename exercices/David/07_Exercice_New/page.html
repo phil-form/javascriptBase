@@ -1,0 +1,41 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <table id="items_table">
+        <thead>
+            <tr>
+                <th>Nom </th>
+                <th>Prix</th>
+                <th>Quantité</th>
+            </tr>
+        </thead>
+        <tbody id="itemTBody">
+        </tbody>
+    </table>
+    
+    <form action="" id="item_add_form">
+        <input type="text" placeholder = 'name' id="item_add_form_name">
+        <input type="number", placeholder="50" id="item_add_form_price">
+        <input type="submit" value="add new product" id="add_item_form_button">
+    </form>
+
+    <table id="basket_table">
+        <thead>
+            <tr>
+                <th>Nom</th>
+                <th>Prix</th>
+                <th>Quantité</th>
+            </tr>
+        </thead>
+        <tbody id="basketBody">
+        </tbody>
+    </table>
+<p>Prix total : <span id="price"></span></p>
+</body>
+<script type="module" src="script.js"></script>
+</html>
