@@ -8,8 +8,17 @@ document.addEventListener('DOMContentLoaded', () => {
     const basketTable = document.querySelector('table#basket-table-id tbody');
     const totalPriceSpan = document.querySelector('span#total-price-id');
     const productsTable = document.querySelector('table#product-table-id tbody');
+
+    const resetBtn = document.querySelector('button#reset-basket-id');
+    resetBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+
+        resetBasket();
+        refreshBasket(basketTable, totalPriceSpan);
+    });
     
     listProducts(productsTable, totalPriceSpan, basketTable);
+    refreshBasket(basketTable, totalPriceSpan);
 });
 
 const listProducts = (productsTable, totalPriceSpan, basketTable) => {
@@ -85,4 +94,8 @@ const refreshBasket = (basketTable, totalPriceSpan) => {
     });
 
     totalPriceSpan.innerHTML = totalPrice;
+};
+
+const resetBasket = () => {
+    localStorage.clear();
 };
