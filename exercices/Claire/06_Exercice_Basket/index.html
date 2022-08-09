@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panier simple</title>
+</head>
+<body>
+    <h1>Descriptif Produit</h1>
+    <div id="products">
+        <table>
+            <thead>
+              <tr>
+                <th>Description</th>
+                <th>Prix</th>
+                <th>Quantité</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="products_data"></tbody>
+        </table>
+    </div>
+
+    <h1>Mon panier</h1>
+    <div id="basket">
+        <table>
+            <thead>
+              <tr>
+                <th>Description</th>
+                <th>Prix</th>
+                <th>Quantité</th>
+              </tr>
+            </thead>
+            <tbody id="basket_data">
+            </tbody>
+        </table>
+        <span>Prix total:</span>
+        <input type="number" id="total_input" name="total_input" disabled>
+        <div>
+          <input type="button" id="clear_basket" value="Clear basket">
+        </div>
+    </div>
+
+    <script type="module" src="./js/index.js"></script>
+</body>
+</html>
