@@ -10,11 +10,28 @@ document.addEventListener('DOMContentLoaded', () => {
     const productsTable = document.querySelector('table#product-table-id tbody');
     const newProductFrm = document.forms['add-product-form'];
 
-    const resetBtn = document.querySelector('button#reset-storage-id');
-    resetBtn.addEventListener('click', (e) => {
+    const resetStorageBtn = document.querySelector('button#reset-storage-id');
+    resetStorageBtn.addEventListener('click', (e) => {
         e.preventDefault();
 
         resetStorage();
+        refreshBasket(basketTable, totalPriceSpan);
+        listProducts(productsTable, totalPriceSpan, basketTable);
+    });
+
+    const resetBasketBtn = document.querySelector('button#reset-basket-id');
+    resetBasketBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+
+        resetBasket();
+        refreshBasket(basketTable, totalPriceSpan);
+    });
+
+    const resetProductsBtn = document.querySelector('button#reset-products-id');
+    resetProductsBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+
+        resetProducts();
         refreshBasket(basketTable, totalPriceSpan);
         listProducts(productsTable, totalPriceSpan, basketTable);
     });
@@ -65,8 +82,8 @@ const listProducts = (productsTable, totalPriceSpan, basketTable) => {
     products.forEach((product, index) => {
         
         const quantityInput = document.createElement('input');
-        quantityInput.type = 'text';
-        quantityInput.value = '0';
+        quantityInput.type = 'number';
+        quantityInput.value = 0;
 
         const addToBasketBtn = document.createElement('button');
         addToBasketBtn.innerHTML = 'Add to basket';
@@ -172,4 +189,12 @@ const refreshBasket = (basketTable, totalPriceSpan) => {
 
 const resetStorage = () => {
     localStorage.clear();
+};
+
+const resetBasket = () => {
+    setBasket([]);
+};
+
+const resetProducts = () => {
+    setProducts([]);
 };
