@@ -13,7 +13,7 @@
         <input name="zipCode-input" type="text" placeholder="Code postal">
         <button id="send-button">Envoyer</button>
         <button id="autoComplete-button">Auto complete</button>
-        <button id="reset-button">Effacer</button>     
+        <button id="reset-button">Effacer</button>    
     </form>
 
     <div id="content">
@@ -27,8 +27,14 @@
     </div>
 
     <script>
-        let datas = [];
         const frm = document.forms.form1;
+        let datas = JSON.parse(localStorage.getItem('datas'));
+
+        if (localStorage.getItem('datas') === null) {
+            localStorage.setItem('datas', '[]');
+        } else {
+            refreshTable();
+        };
 
         const sendBtn = document.querySelector("button#send-button");
         sendBtn.addEventListener("click", (e) => {
@@ -41,7 +47,7 @@
                     zipCode: frm.elements['zipCode-input'].value
                 };
                 datas.push(data);
-                console.log(datas);
+                localStorage.setItem('datas', JSON.stringify(datas));
                 refreshTable();
             } else {
                 const zipCodeInput = frm.elements['zipCode-input'];
@@ -62,6 +68,7 @@
         resetBtn.addEventListener("click", (e) => {
             e.preventDefault();
             datas = [];
+            localStorage.setItem('datas', JSON.stringify(datas));
             refreshTable();
         });
 
