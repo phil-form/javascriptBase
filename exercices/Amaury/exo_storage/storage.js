@@ -95,6 +95,16 @@ const listProducts = (productsTable, totalPriceSpan, basketTable) => {
             refreshBasket(basketTable, totalPriceSpan);
         });
 
+        quantityInput.addEventListener('focus', (e) => {
+            quantityInput.value = '';
+        });
+
+        quantityInput.addEventListener('blur', (e) => {
+            if (quantityInput.value == '') {
+                quantityInput.value = 0;
+            };
+        });
+
         const newRow = productsTable.insertRow();
 
         const nameCell = newRow.insertCell();
