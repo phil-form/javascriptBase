@@ -38,6 +38,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
         listProducts(productsTable, totalPriceSpan, basketTable);
     });
+
+    const addSampleBtn = document.querySelector('button#add-sample-id');
+    addSampleBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+
+        let products = getProducts();
+        productsSample.forEach((productSample) => {
+            products.push(productSample);
+        });
+        setProducts(products);
+
+        refreshBasket(basketTable, totalPriceSpan);
+        listProducts(productsTable, totalPriceSpan, basketTable);
+    });
     
     listProducts(productsTable, totalPriceSpan, basketTable);
     refreshBasket(basketTable, totalPriceSpan);
