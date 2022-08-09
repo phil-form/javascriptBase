@@ -187,7 +187,7 @@ const refreshBasket = (basketTable, totalPriceSpan) => {
         const nameCell = newRow.insertCell();
         nameCell.innerHTML = item.name;
         const quantityCell = newRow.insertCell();
-        quantityCell.innerHTML = item.price;
+        quantityCell.innerHTML = item.quantity;
         const priceCell = newRow.insertCell();
         priceCell.innerHTML = item.price;
         const actionCell = newRow.insertCell();
