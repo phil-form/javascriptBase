@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exo1</title>
+</head>
+<body>
+    <form id="address_form">
+        <input type="text" name="firstName" placeholder="First name">
+        <input type="text" name="lastName" placeholder="Last name">
+        <input type="number" name="zip" placeholder="Zip code">
+        <input type="submit" id="send" value="Envoyer">
+        <input type="button" id="autoComplete" value="Autocomplete">
+        <input type="button" id="clear" value="Effacer">
+    </form>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Last name</th>
+          <th>First name</th>
+          <th>Zip code</th>
+        </tr>
+      </thead>
+      <tbody id="table_data">
+      </tbody>
+      </table>
+
+    <script type="module" src="./js/index.js"></script>
+</body>
+</html>

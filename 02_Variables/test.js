@@ -111,9 +111,9 @@ console.log(numbers.filter((a) => !(a % 2)));
 let d = new Date();
 
 console.log(d.getDate());
-console.log(d.getMonth());
+console.log(d.getMonth()); // 0 - 11 janvier -> decembre
 console.log(d.getFullYear());
-console.log(d.getDay());
+console.log(d.getDay()); // 0 - 6 dimanche -> lundi
 console.log(d.toString());
 console.log(d.toDateString());
 console.log(d.toTimeString());
