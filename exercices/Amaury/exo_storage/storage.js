@@ -86,6 +86,7 @@ const listProducts = (productsTable, totalPriceSpan, basketTable) => {
         quantityInput.value = 0;
 
         const addToBasketBtn = document.createElement('button');
+        addToBasketBtn.classList.add('btn', 'btn-secondary');
         addToBasketBtn.innerHTML = 'Add to basket';
         addToBasketBtn.addEventListener('click', (e) => {
             e.preventDefault();
@@ -172,6 +173,7 @@ const refreshBasket = (basketTable, totalPriceSpan) => {
 
     basket.forEach((item, index) => {
         const removeFromBasketBtn = document.createElement('button');
+        removeFromBasketBtn.classList.add('btn', 'btn-danger');
         removeFromBasketBtn.innerHTML = 'Remove';
         removeFromBasketBtn.addEventListener('click', (e) => {
             e.preventDefault();
