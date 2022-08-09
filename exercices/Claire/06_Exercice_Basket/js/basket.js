@@ -1,3 +1,54 @@
+
+
+export class Basket {
+
+    constructor() {
+        this.load();
+    }
+
+
+    load() {
+        const basket = JSON.parse(localStorage.getItem('basket'));
+        this.items = basket ? basket : [];
+        for(let i in this.items) {
+            this.items[i] = Object.assign(new BasketItem(), this.items[i]);
+        }
+        console.log('basket loaded from localstorage')
+    }
+
+    add(product, quantity) {
+        let found = false;
+        for(let item of this.items) {
+            if(item.product.name == product.name) {
+                item.quantity += quantity;
+                found = true;
+            }
+        }
+        if(!found) {
+            this.items.push(new BasketItem(product, quantity));
+        }
+        localStorage.setItem('basket', JSON.stringify(this.items))
+    }
+
+    remove(product, quantity) {
+        
+    }
+
+    total() {
+        let total = 0;
+        for (let item of this.items) {
+            total += item.product.price * item.quantity;
+        }
+        return total;
+    }
+
+    empty() {
+        localStorage.removeItem('basket');
+        this.items = [];
+    }
+
+}
+
 class BasketItem {
 
     constructor(product, quantity) {
@@ -5,49 +56,17 @@ class BasketItem {
         this.quantity = quantity;
     }
 
-}
-
-export function getAsHtmlRow(basketItem) {
-    const tr = document.createElement('tr');
+    getAsHtmlRow() {
+        const tr = document.createElement('tr');
     
-    const cellName = tr.insertCell();
-    const cellPrice = tr.insertCell();
-    const cellQty = tr.insertCell();
-    cellName.innerText = basketItem.product.name;
-    cellPrice.innerText = basketItem.product.price;
-    cellQty.innerText = basketItem.quantity;
+        const cellName = tr.insertCell();
+        const cellPrice = tr.insertCell();
+        const cellQty = tr.insertCell();
+        cellName.innerText = this.product.name;
+        cellPrice.innerText = this.product.price;
+        cellQty.innerText = this.quantity;
 
-    return tr;
-}
-
-export function loadBasket() {
-    const basket = JSON.parse(localStorage.getItem('basket'));
-    return basket ? basket : [];
-}
-
-export function addToBasket(product, quantity) {
-    const basket = loadBasket();
-    let found = false;
-    for(let item of basket) {
-        if(item.product.name == product.name) {
-            item.quantity += quantity;
-            found = true;
-        }
+        return tr;
     }
-    if(!found) {
-        basket.push(new BasketItem(product, quantity));
-    }
-    localStorage.setItem('basket', JSON.stringify(basket))
-}
 
-export function emptyBasket() {
-    localStorage.removeItem('basket');
-}
-
-export function computeTotal(basket) {
-    let total = 0;
-    for (let item of basket) {
-        total += item.product.price * item.quantity;
-    }
-    return total;
 }
