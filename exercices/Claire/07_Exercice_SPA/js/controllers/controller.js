@@ -1,6 +1,6 @@
-import { renderEditContact } from "./edit_controller.js"
-import { renderInfoContact } from "./info_controller.js"
-import { renderListData } from "./list_controller.js"
+import { renderEditContact } from "./contacts/contact_edit_controller.js"
+import { renderInfoContact } from "./contacts/contact_info_controller.js"
+import { renderListData } from "./contacts/contact_list_controller.js"
 
 const navlinkHome = document.getElementById('navlink-home')
 navlinkHome.addEventListener('click', (e) => {
@@ -8,48 +8,48 @@ navlinkHome.addEventListener('click', (e) => {
 })
 const navlinkList = document.getElementById('navlink-list')
 navlinkList.addEventListener('click', (e) => {
-    renderList()
+    renderContactList()
 })
 
 document.addEventListener('homeView', (e) => {
     renderHome()
 })
 
-document.addEventListener('listView', (e) => {
-    renderList()
+document.addEventListener('listContactView', (e) => {
+    renderContactList()
 })
 
-document.addEventListener('infoView', (e) => {
-    renderInfo(e.detail)
+document.addEventListener('infoContactView', (e) => {
+    renderContactInfo(e.detail)
 })
 
-document.addEventListener('editView', (e) => {
-    renderEdit(e.detail)
+document.addEventListener('editContactView', (e) => {
+    renderContactEdit(e.detail)
 })
 
-renderList()
+renderContactList()
 
 export function renderHome() {
     activeNavlink('navlink-home')
     activeView('view-home')
 }
 
-export function renderList() {
+export function renderContactList() {
     renderListData()
     activeNavlink('navlink-list')
-    activeView('view-list')    
+    activeView('view-contact-list')    
 }
 
-export function renderInfo(contact) {
+export function renderContactInfo(contact) {
     renderInfoContact(contact)
     activeNavlink('none')
-    activeView('view-info')
+    activeView('view-contact-info')
 }
 
-export function renderEdit(contact) {
+export function renderContactEdit(contact) {
     renderEditContact(contact)
     activeNavlink('none')
-    activeView('view-edit')
+    activeView('view-contact-edit')
 }
 
 function activeNavlink(id) {

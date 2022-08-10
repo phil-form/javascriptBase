@@ -1,12 +1,12 @@
-import { contactList } from "../contact.js"
+import { contactList } from "../../contact.js"
 
 const form = document.forms['form-edit-contact']
-const inputId = document.getElementById('input-edit-id')
-const inputFirstname = document.getElementById('input-edit-firstname')
-const inputLastname = document.getElementById('input-edit-lastname')
-const inputEmail = document.getElementById('input-edit-email')
+const inputId = document.getElementById('input-contact-edit-id')
+const inputFirstname = document.getElementById('input-contact-edit-firstname')
+const inputLastname = document.getElementById('input-contact-edit-lastname')
+const inputEmail = document.getElementById('input-contact-edit-email')
 
-const btnSave = document.getElementById('btn-edit-save')
+const btnSave = document.getElementById('btn-contact-edit-save')
 btnSave.addEventListener('click', (e) => {
     e.preventDefault()
     const id = parseInt(inputId.value)
@@ -14,12 +14,12 @@ btnSave.addEventListener('click', (e) => {
     const lastname = inputLastname.value
     const email = inputEmail.value
     const contact = contactList.addOrUpdate(id, firstname, lastname, email)
-    document.dispatchEvent(new CustomEvent('infoView', {detail: contact}))
+    document.dispatchEvent(new CustomEvent('infoContactView', {detail: contact}))
 })
 
-document.getElementById('btn-edit-cancel').addEventListener('click', (e) => {
+document.getElementById('btn-contact-edit-cancel').addEventListener('click', (e) => {
     e.preventDefault()
-    document.dispatchEvent(new CustomEvent('listView'))
+    document.dispatchEvent(new CustomEvent('listContactView'))
 })
 
 export function renderEditContact(contact) {

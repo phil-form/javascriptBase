@@ -1,11 +1,11 @@
-import { contactList } from '../contact.js'
+import { contactList } from '../../contact.js'
 
 
 const contactTable = document.getElementById('data-contacts')
-const newBtn = document.getElementById('btn-list-new')
+const newBtn = document.getElementById('btn-contact-list-new')
 newBtn.addEventListener('click', (e) => {
     e.preventDefault()
-    document.dispatchEvent(new CustomEvent('editView'))
+    document.dispatchEvent(new CustomEvent('editContactView'))
 })
 
 export function renderListData() {
@@ -29,29 +29,29 @@ function getAsHtmlRow(contact) {
     cellEm.innerText = contact.email
 
     const form = document.createElement('form')
-    form.name = `form-action-${contact.id}`
+    form.name = `form-contacts-action-${contact.id}`
     const infoBtn = document.createElement('input')
     infoBtn.classList.add('btn', 'btn-info')
     infoBtn.type = 'button'
     infoBtn.value = 'Info'
     infoBtn.addEventListener('click', (e) => {
         e.preventDefault()
-        document.dispatchEvent(new CustomEvent('infoView', {detail: contact}))
+        document.dispatchEvent(new CustomEvent('infoContactView', {detail: contact}))
     })
     form.appendChild(infoBtn)
     const editBtn = document.createElement('input')
-    editBtn.id = `btn-list-edit-${contact.id}`
+    editBtn.id = `btn-contact-list-edit-${contact.id}`
     editBtn.classList.add('btn', 'btn-primary')
     editBtn.type = 'button'
     editBtn.value = 'Edit'
     editBtn.addEventListener('click', (e) => {
         e.preventDefault()
-        document.dispatchEvent(new CustomEvent('editView', {detail: contact}))
+        document.dispatchEvent(new CustomEvent('editContactView', {detail: contact}))
     })
 
     form.appendChild(editBtn)
     const deleteBtn = document.createElement('input')
-    deleteBtn.id = `btn-list-delete-${contact.id}`
+    deleteBtn.id = `btn-contact-list-delete-${contact.id}`
     deleteBtn.classList.add('btn', 'btn-danger')
     deleteBtn.type = 'button'
     deleteBtn.value = 'Delete'
