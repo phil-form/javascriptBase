@@ -9,24 +9,66 @@ class User {
 }
 
 let sesstor = "opusers";
+let users   = [];
 
-// load data from storage
-let users = JSON.parse(sessionStorage.getItem(sesstor));
-if (users)
+navMenu();
+home();
+
+// called once
+function navMenu()
 {
-    // already some data: list
-    for (let usr in users)
+    let nm  = document.getElementById("navmenu");
+    let sp  = document.createElement("span");
+    sp.appendChild(addMenu("Home"));
+    sp.appendChild(addMenu("Create"));
+    sp.appendChild(addMenu("List"));
+    nm.appendChild(sp);
+
+    let bth = document.getElementById("navhome");
+    let btc = document.getElementById("navcreate");
+    let btl = document.getElementById("navlist");
+
+    bth.addEventListener("click", e => {
+        e.preventDefault();
+
+        home();
+    })
+
+    btc.addEventListener("click", e => {
+        e.preventDefault();
+
+        addEditUser(-1);
+    })
+
+    btl.addEventListener("click", e => {
+        e.preventDefault();
+
+        showList();
+    })
+
+} // navMenu
+
+function home()
+{
+    // load data from storage
+    users = JSON.parse(sessionStorage.getItem(sesstor));
+    if (users)
     {
-        users[usr] = new User(users[usr].firstname, users[usr].lastname, users[usr].email);
+        // already some data: list
+        for (let usr in users)
+        {
+            users[usr] = new User(users[usr].firstname, users[usr].lastname, users[usr].email);
+        }
+        showList();
     }
-    showList();
-}
-else
-{
-    // not yet any data: create
-    users = [];
-    addEditUser(-1);
-}
+    else
+    {
+        // not yet any data: create
+        users = [];
+        addEditUser(-1);
+    }
+
+} // home
 
 // create a new user or edit an existing one
 //   idx: -1  : create a new one
@@ -34,6 +76,11 @@ else
 function addEditUser(idx)
 {
     clr();
+
+    // title
+    let t = document.createElement("h1");
+    t.innerText = (idx == -1) ? "Create user" : "Update user";
+    opbody.appendChild(t);
 
     let frnew = document.createElement("form");
 
@@ -96,6 +143,11 @@ function addEditUser(idx)
 function showList()
 {
     clr();
+
+    // title
+    let t = document.createElement("h1");
+    t.innerText = "Users list";
+    opbody.appendChild(t);
 
     // table
     let tbl = document.createElement("table");
@@ -244,6 +296,25 @@ function clr()
         opbody.removeChild(opbody.firstChild);
     }
 }
+
+// create a button with name "navtxt", where txt is the parameter in lowercases
+// the text on the button is txt, with cases as given
+function addMenu(txt)
+{
+    let btn = txt.toLowerCase();
+    btn = `nav${btn}`;
+
+    let a    = document.createElement("a");
+    a.href   = "#";
+    let bt   = document.createElement("input");
+    bt.type  = "submit";
+    bt.id    = btn;
+    bt.value = txt;
+    a.appendChild(bt);
+
+    return a;
+
+} // addMenu
 
 // called to build main list (all cells, but cell 5 with buttons)
 function addCell(val)
