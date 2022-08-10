@@ -121,7 +121,7 @@ const userToRow = (users, user, container) => {
     const actionsTd = document.createElement('td');
     const infoBtn = document.createElement('button');
     infoBtn.innerHTML = 'info';
-    infoBtn.classList.add('btn', 'btn-outline-success');
+    infoBtn.classList.add('btn', 'btn-link', 'text-info');
     infoBtn.addEventListener('click', (e) => {
         e.preventDefault();
 
@@ -129,7 +129,7 @@ const userToRow = (users, user, container) => {
     });
     const deleteBtn = document.createElement('button');
     deleteBtn.innerHTML = 'delete';
-    deleteBtn.classList.add('btn', 'btn-outline-danger');
+    deleteBtn.classList.add('btn', 'btn-link', 'text-danger');
     deleteBtn.addEventListener('click', (e) => {
         e.preventDefault();
 
@@ -138,7 +138,7 @@ const userToRow = (users, user, container) => {
     });
     const editBtn = document.createElement('button');
     editBtn.innerHTML = 'edit';
-    editBtn.classList.add('btn', 'btn-outline-primary');
+    editBtn.classList.add('btn', 'btn-link', 'text-success');
     editBtn.addEventListener('click', (e) => {
         e.preventDefault();
 
