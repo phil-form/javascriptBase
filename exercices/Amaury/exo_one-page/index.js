@@ -1,7 +1,7 @@
 
 document.addEventListener('DOMContentLoaded', () => {
     const root = document.getElementById('root');
-    showUsersList(root);
+    initiateNav(root);
 });
 
 const getUsers = () => {
@@ -12,6 +12,25 @@ const getUsers = () => {
 const setUsers = (data) => {
     localStorage.setItem('users', JSON.stringify(data));
 };
+
+const initiateNav = (container) => {
+    const logo = document.getElementById('nav-logo');
+    const usersLink = document.getElementById('nav-link-users');
+
+    logo.addEventListener('click', (e) => {
+        e.preventDefault();
+
+        showUsersList(container);
+    });
+
+    usersLink.addEventListener('click', (e) => {
+        e.preventDefault();
+
+        showUsersList(container);
+    });
+
+    showUsersList(container);
+}
 
 const showUsersList = (container) => {
     container.innerHTML = '';
@@ -102,7 +121,7 @@ const userToRow = (users, user, container) => {
     const actionsTd = document.createElement('td');
     const infoBtn = document.createElement('button');
     infoBtn.innerHTML = 'info';
-    infoBtn.classList.add('btn', 'btn-info');
+    infoBtn.classList.add('btn', 'btn-outline-success');
     infoBtn.addEventListener('click', (e) => {
         e.preventDefault();
 
@@ -110,7 +129,7 @@ const userToRow = (users, user, container) => {
     });
     const deleteBtn = document.createElement('button');
     deleteBtn.innerHTML = 'delete';
-    deleteBtn.classList.add('btn', 'btn-danger');
+    deleteBtn.classList.add('btn', 'btn-outline-danger');
     deleteBtn.addEventListener('click', (e) => {
         e.preventDefault();
 
@@ -119,15 +138,15 @@ const userToRow = (users, user, container) => {
     });
     const editBtn = document.createElement('button');
     editBtn.innerHTML = 'edit';
-    editBtn.classList.add('btn', 'btn-warning');
+    editBtn.classList.add('btn', 'btn-outline-primary');
     editBtn.addEventListener('click', (e) => {
         e.preventDefault();
 
         showUserForm(container, users, user);
     });
     actionsTd.appendChild(infoBtn);
-    actionsTd.appendChild(deleteBtn);
     actionsTd.appendChild(editBtn);
+    actionsTd.appendChild(deleteBtn);
 
     userRow.appendChild(idTd);
     userRow.appendChild(lastnameTd);
