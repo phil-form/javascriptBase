@@ -18,15 +18,15 @@ home();
 function navMenu()
 {
     let nm  = document.getElementById("navmenu");
-    let sp  = document.createElement("span");
-    sp.appendChild(addMenu("Home"));
+    let sp  = document.createElement ("span"   );
+    sp.appendChild(addMenu("Home"  ));
     sp.appendChild(addMenu("Create"));
-    sp.appendChild(addMenu("List"));
+    sp.appendChild(addMenu("List"  ));
     nm.appendChild(sp);
 
-    let bth = document.getElementById("navhome");
+    let bth = document.getElementById("navhome"  );
     let btc = document.getElementById("navcreate");
-    let btl = document.getElementById("navlist");
+    let btl = document.getElementById("navlist"  );
 
     bth.addEventListener("click", e => {
         e.preventDefault();
@@ -83,21 +83,28 @@ function addEditUser(idx)
     opbody.appendChild(t);
 
     let frnew = document.createElement("form");
+    let tb    = document.createElement("table");
 
     // input fields
-    frnew.appendChild(addDivLblInput("frstnm", "Firstname"));
-    frnew.appendChild(addDivLblInput("lastnm", "Lastname" ));
-    frnew.appendChild(addDivLblInput("email" , "E-mail"   ));
+    tb.appendChild(addTrLblInput("frstnm", "Firstname: "));
+    tb.appendChild(addTrLblInput("lastnm", "Lastname: " ));
+    tb.appendChild(addTrLblInput("email" , "E-mail: "   ));
 
     // button
-    let dbtn = document.createElement("div");
+    let rbtn = document.createElement("tr");
+    let cbtn = document.createElement("td");
+    cbtn.colSpan = 2;
     let ibtn = document.createElement("input");
-    ibtn.type  = "submit";
-    ibtn.name  = "newusr";
-    ibtn.id    = "newusr";
-    ibtn.value = (idx == -1) ? "Create" : "Update";
-    dbtn.appendChild(ibtn);
-    frnew.appendChild(dbtn);
+    ibtn.type      = "submit";
+    ibtn.name      = "newusr";
+    ibtn.id        = "newusr";
+    ibtn.value     = (idx == -1) ? "Create" : "Update";
+    ibtn.className = "btn btn-warning";
+
+    cbtn.appendChild(ibtn);
+    rbtn.appendChild(cbtn);
+    tb.appendChild(rbtn);
+    frnew.appendChild(tb);
 
     opbody.appendChild(frnew);
 
@@ -151,7 +158,8 @@ function showList()
 
     // table
     let tbl = document.createElement("table");
-    tbl.id  = "tblusers"
+    tbl.className = "table";
+    tbl.id        = "tblusers"
 
     // header
     let tbh    = document.createElement("thead");
@@ -186,9 +194,9 @@ function showList()
         let td5 = document.createElement("td");
         let act = document.createElement("form");
 
-        let btinfo = addButton("Info"  , "info", idx);
-        let btedit = addButton("Edit"  , "edit", idx);
-        let btdel  = addButton("Remove", "rem" , idx);
+        let btinfo = addButton("Info"  , "info", idx, "btn btn-info");
+        let btedit = addButton("Edit"  , "edit", idx, "btn btn-warning");
+        let btdel  = addButton("Remove", "rem" , idx, "btn btn-danger");
 
         act.appendChild(btinfo);
         act.appendChild(btedit);
@@ -238,7 +246,7 @@ function showList()
     // col 5: button
     let tfd5 = document.createElement("th");
     let frad = document.createElement("form");
-    let btad = addButton("Add", "add", 0);
+    let btad = addButton("Add", "add", 0, "btn btn-primary");
 
     frad.appendChild(btad);
     tfd5.appendChild(frad);
@@ -310,6 +318,7 @@ function addMenu(txt)
     bt.type  = "submit";
     bt.id    = btn;
     bt.value = txt;
+    bt.className = "btn btn-link"
     a.appendChild(bt);
 
     return a;
@@ -326,39 +335,46 @@ function addCell(val)
 }
 
 // called to build main list (all buttons, included "add")
-function addButton(lbl, id, idx)
+function addButton(lbl, id, idx, btclass = "")
 {
     let btn   = document.createElement("input");
-    btn.type  = "submit"
+    btn.type  = "submit";
     btn.id    = `btn${id}${idx}`;
     btn.value = lbl;
+    if (btclass != "")
+    {
+        btn.className = btclass;
+    }
 
     return btn;
 }
 
-// create and return a div with a label and an input
+// create and return a table row with a label and an input
 // called for create / update form
 //   id   : id of input
 //   label: shown in label and placeholder
-function addDivLblInput(id, label)
+function addTrLblInput(id, label)
 {
-    let dv = document.createElement("div");
+    let tr = document.createElement("tr");
 
+    let td1 = document.createElement("td");
     let lbl = document.createElement("label");
     lbl.for       = id;
     lbl.innerText = label;
-    dv.appendChild(lbl);
+    td1.appendChild(lbl);
+    tr.appendChild(td1);
 
+    let td2 = document.createElement("td");
     let inp = document.createElement("input");
     inp.type        = "text";
     inp.name        = id;
     inp.id          = id;
-    inp.placeholder = label;
-    dv.appendChild(inp);
+    td2.appendChild(inp);
+    tr.appendChild(td2);
 
-    return dv;
+    return tr;
 
-} // addDivLblInput
+} // addTrLblInput
 
 // get row id from button name
 //   btn: button name
