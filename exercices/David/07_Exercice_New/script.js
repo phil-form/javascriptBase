@@ -3,8 +3,7 @@ const basketTable = document.getElementById('basket_table');
 const basketTBody = document.getElementById('basketBody');
 const itemTBody = document.getElementById('itemTBody');
 const priceSpan = document.getElementById('price');
-const itemForm = document.forms['itemForm'];
-const addItemBtn = document.getElementById('addItemBtn');
+const addItemFormButton = document.getElementById('add_item_form_button');
 
 class BasketItem
 {
@@ -18,29 +17,31 @@ class BasketItem
         const nameTd = tr.insertCell();
         const priceTd = tr.insertCell();
         const qtyTd = tr.insertCell();
-        const actTd = tr.insertCell();
-
-        const removeFromBasket = document.createElement('input');
-        removeFromBasket.type = 'submit'
-        removeFromBasket.value = "Retirer du panier";
-        actTd.appendChild(removeFromBasket);
-
-        removeFromBasket.addEventListener('click', (e) =>
-        {
-            e.preventDefault();
-
-            delete basket[this.item.name];
-            renderBasket();
-        });
+        const actionTd = tr.insertCell();
 
         nameTd.innerText = this.item.name;
         priceTd.innerText = this.item.price;
         qtyTd.innerText = this.quantity;
+
+        const remove = document.createElement('input');
+        actionTd.appendChild(remove);
+        remove.type = 'submit';
+        remove.value = 'remove';
+
+        remove.addEventListener('click', (e) => {
+            delete basket[tr.children[0].innerHTML];
+            sessionStorage.setItem('basket', JSON.stringify(basket));
+            render();
+        });
     }
 }
 
-let basket = JSON.parse(sessionStorage.getItem('basket'));
-basket = basket ? basket : {};
+let tmp = sessionStorage.getItem('basket');
+let basket = null;
+if (tmp)
+    basket = JSON.parse(tmp);
+else
+    basket = basket ? basket : {};
 
 for(const index in basket)
 {
@@ -76,32 +77,6 @@ class Item
         submitBtn.value = "Ajouter au panier";
         addToBskForm.appendChild(submitBtn);
 
-        const removeBtn = document.createElement('input');
-        removeBtn.type = 'button';
-        removeBtn.value = "Retirer l'article";
-        addToBskForm.appendChild(removeBtn);
-
-        removeBtn.addEventListener('click', (e) =>
-        {
-            e.preventDefault();
-
-            const index = items.indexOf(this);
-            if(index !== -1)
-            {
-                items.splice(index, 1);
-                sessionStorage.setItem('items', JSON.stringify(items));
-
-                if(basket[this.name])
-                {
-                    delete basket[this.name];
-                    sessionStorage.setItem('basket', JSON.stringify(basket));
-                    renderBasket();
-                }
-
-                renderItems();
-            }
-        });
-
         submitBtn.addEventListener('click', (e) =>
         {
             e.preventDefault();
@@ -115,36 +90,16 @@ class Item
             }
 
             sessionStorage.setItem('basket', JSON.stringify(basket));
-            renderBasket();
+            render();
         });
     }
 }
 
-let items = JSON.parse(sessionStorage.getItem('items'));
-items = items ? items.map((item) =>
-{
-    return new Item(item.name, item.price);
-}) : [];
-
-renderItems();
-
-function renderItems()
-{
-    while(itemTBody.firstChild)
-    {
-        itemTBody.removeChild(itemTBody.firstChild);
-    }
-
-    for(const itm of items)
-    {
-        const tr = document.createElement('tr');
-        itemTBody.appendChild(tr);
-        itm.getAsTrElement(tr);
-    }
-}
-
-
-renderBasket();
+let items = [
+    new Item("Chaise", 25),
+    new Item("Table", 150),
+    new Item("Meuble TV", 250),
+];
 
 function renderBasket()
 {
@@ -165,13 +120,31 @@ function renderBasket()
     priceSpan.innerText = totalPrice;
 }
 
-addItemBtn.addEventListener('click', (e) =>
+function renderShop()
 {
-    e.preventDefault();
-    const name = itemForm.name.value;
-    const price = itemForm.price.value;
-    items.push(new Item(name, price));
-    sessionStorage.setItem('items', JSON.stringify(items));
+    while (itemTBody.firstChild) {
+        itemTBody.removeChild(itemTBody.firstChild);
+    }
 
-    renderItems();
+    for (const item of items) {
+        const tr = document.createElement('tr');
+        itemTBody.appendChild(tr);
+        item.getAsTrElement(tr);
+    }
+}
+
+addItemFormButton.addEventListener('click', (e) => {
+    e.preventDefault();
+    const item_name = document.getElementById('item_add_form_name').value;
+    const item_price = document.getElementById('item_add_form_price').value;
+    const new_item = new Item(item_name, item_price);
+    items.push(new_item);
+    render();
 });
+
+function render() {
+    renderShop();
+    renderBasket();
+}
+
+render();

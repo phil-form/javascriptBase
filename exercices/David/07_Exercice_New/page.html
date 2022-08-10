@@ -6,12 +6,6 @@
     <title>Title</title>
 </head>
 <body>
-    <form name="itemForm">
-        <input type="text" name="name" placeholder="nom"/>
-        <input type="number" name="price" placeholder="prix"/>
-
-        <input id="addItemBtn" type="submit" name="itemSubmit" value="Ajouter">
-    </form>
     <table id="items_table">
         <thead>
             <tr>
@@ -23,6 +17,12 @@
         <tbody id="itemTBody">
         </tbody>
     </table>
+    
+    <form action="" id="item_add_form">
+        <input type="text" placeholder = 'name' id="item_add_form_name">
+        <input type="number", placeholder="50" id="item_add_form_price">
+        <input type="submit" value="add new product" id="add_item_form_button">
+    </form>
 
     <table id="basket_table">
         <thead>
