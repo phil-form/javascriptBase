@@ -39,6 +39,9 @@ trp.appendChild(tdh2);
 let tdh3 = document.createElement("th");
 tdh3.innerHTML = "Prix"
 trp.appendChild(tdh3);
+let tdh4 = document.createElement("th");
+tdh4.innerHTML = "Retrait"
+trp.appendChild(tdh4);
 ph.appendChild(trp);
 panier.appendChild(ph);
 
@@ -186,31 +189,6 @@ function ShowProds()
         })
         frm.appendChild(bta);
 
-        // 3: bouton retrait
-        let btr   = document.createElement("input");
-        btr.type  = "submit";
-        btr.name  = `btr_${idx}`
-        btr.id    = `btr_${idx}`
-        btr.value = "Retirer"
-        btr.addEventListener("click", e => {
-            e.preventDefault();
-        
-            const prd = produits[prod];
-            const qty = parseInt(qte.value);
-            qte.value = "";
-            if (!achats[prd.desc]) {
-                achats[prd.desc] = new Panier(prd.desc, 0, 0);   
-            }
-            achats[prd.desc].prix -= (qty * prd.prix);
-            achats[prd.desc].qte  -=  qty            ;
-            if (achats[prd.desc].qte <= 0) {
-                delete achats[prd.desc];
-            }
-            sessionStorage.setItem("achats", JSON.stringify(achats));
-            ShowPanier();
-        })
-        frm.appendChild(btr);
-
         td3.appendChild(frm);
         tr.appendChild(td3);
 
@@ -234,9 +212,12 @@ function ShowPanier()
     tot.prix = 0;
 
     // tous les achats
+    let idx = 0;
     for (let itemp in achats) {
         let trp = document.createElement("tr")
 
+        idx += 1;
+    
         // colone 1: desc
         let tdp1 = document.createElement("td");
         tdp1.innerHTML = achats[itemp].prod;
@@ -251,6 +232,44 @@ function ShowPanier()
         let tdp2 = document.createElement("td");
         tdp2.innerHTML = achats[itemp].prix
         trp.appendChild(tdp2);
+
+        // colone 4: formulaire avec qté et bouton de retrait
+        let tdp4 = document.createElement("td");
+        let frr = document.createElement("form");
+        frr.id     = `frmretr_${idx}`;
+        frr.method = "post"
+
+        // 4: qté
+        let qtr  = document.createElement("input");
+        qtr.type = "number";
+        qtr.name = `qtr_${idx}`
+        qtr.id   = `qtr_${idx}`
+        frr.appendChild(qtr);
+
+        // 4: bouton retrait
+        let btr   = document.createElement("input");
+        btr.type  = "submit";
+        btr.name  = `btr_${idx}`
+        btr.id    = `btr_${idx}`
+        btr.value = "Retirer"
+        btr.addEventListener("click", e => {
+            e.preventDefault();
+        
+            const prd = achats[itemp].prod;
+            const qty = parseInt(qtr.value);
+            qtr.value = "";
+            achats[prd].prix -= (qty * produits[prd].prix);
+            achats[prd].qte  -=  qty                      ;
+            if (achats[prd].qte <= 0) {
+                delete achats[prd];
+            }
+            sessionStorage.setItem("achats", JSON.stringify(achats));
+            ShowPanier();
+        })
+        frr.appendChild(btr);
+
+        tdp4.appendChild(frr);
+        trp.appendChild(tdp4);
 
         // prix total
         tot.prix += achats[itemp].prix;
