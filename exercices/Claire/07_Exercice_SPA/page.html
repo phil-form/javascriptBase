@@ -5,13 +5,13 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-    <title>Contact List</title>
+    <title>Single Page Application</title>
 </head>
 <body>
 
     <!-- NAVBAR -->
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <a class="navbar-brand" href="#">Contacts</a>
+        <a class="navbar-brand" href="#">SinglePage</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
         </button>
@@ -21,10 +21,17 @@
             <li id="navlink-home" class="nav-item">
               <a class="nav-link">Home</a>
             </li>
-            <li id="navlink-list" class="nav-item active">
+            <li id="navlink-contacts" class="nav-item">
               <a class="nav-link">Contacts</a>
             </li>
-        
+            <li id="navlink-shop" class="nav-item">
+              <a class="nav-link">Shop</a>
+            </li>
+          </ul>
+          <ul class="navbar-nav">
+            <li id="navlink-basket" class="nav-item">
+              <a class="nav-link">My basket</a>
+            </li>
           </ul>
         </div>
     </nav>
@@ -57,15 +64,15 @@
       <form name="form-edit-contact">
         <input type="number" id="input-contact-edit-id" hidden>
         <div class="form-group">
-          <label for="input-firstname">First name</label>
+          <label for="input-contact-edit-firstname">First name</label>
           <input type="text" class="form-control" id="input-contact-edit-firstname" placeholder="Enter first name" required>
         </div>
         <div class="form-group">
-          <label for="input-lastname">Last name</label>
+          <label for="input-contact-edit-lastname">Last name</label>
           <input type="text" class="form-control" id="input-contact-edit-lastname" placeholder="Enter last name" required>
         </div>
         <div class="form-group">
-          <label for="input-email">Email address</label>
+          <label for="input-contact-edit-email">Email address</label>
           <input type="email" class="form-control" id="input-contact-edit-email" aria-describedby="emailHelp"
             placeholder="Enter email" required>
         </div>
@@ -91,6 +98,74 @@
         <input type="button" class="btn btn-primary" id="btn-contact-info-edit" value="Edit">
         <input type="button" class="btn btn-danger" id="btn-contact-info-delete" value="Delete">
       </div>
+    </div>
+
+    <!-- SHOP PRODUCT LIST -->
+    <div id="view-shop" class="container" hidden>
+      <h1>Shop</h1>
+      <input type="button" class="btn btn-primary" id="btn-product-new" value="New product">
+      <table class="table">
+        <thead>
+          <tr>
+            <!--<th scope="col">#</th>-->
+            <th scope="col">Name</th>
+            <th scope="col">Price</th>
+            <th scope="col">Actions</th>
+            <th scope="col">Admin actions</th>
+          </tr>
+        </thead>
+        <tbody id="data-products"></tbody>
+      </table>
+    </div>
+
+    <!-- PRODUCT INFO -->
+    <div id="view-product-info" class="container" hidden>
+      <h1>Info of product</h1>
+      <dl>
+        <dt>Name:</dt>
+        <dd id="info-product-name"></dd>
+        <dt>Price:</dt>
+        <dd id="info-product-price"></dd>
+      </dl>
+      <div>
+        <div id="product-info-action">
+          <input type="button" class="btn btn-success" id="btn-product-info-add-basket" value="Add to basket">
+        </div>
+        <div id="product-info-admin-action">
+          <input type="button" class="btn btn-primary" id="btn-product-info-edit" value="Edit">
+          <input type="button" class="btn btn-danger" id="btn-product-info-delete" value="Delete">
+        </div>
+      </div>
+    </div>
+
+    <!-- PRODUCT EDIT -->
+    <div id="view-product-edit" class="container" hidden>
+      <h1>Create/Edit product</h1>
+      <form name="form-edit-product">
+        <!-- <input type="number" id="input-product-edit-id" hidden> -->
+        <div class="form-group">
+          <label for="input-product-edit-name">Product name</label>
+          <input type="text" class="form-control" id="input-product-edit-name" placeholder="Enter product name" required>
+        </div>
+        <div class="form-group">
+          <label for="input-product-edit-price">Product price</label>
+          <input type="number" class="form-control" id="input-product-edit-price" placeholder="Enter product price" required>
+        </div>
+        <div class="form-group">
+          <input type="submit" class="btn btn-primary" id="btn-product-edit-save" value="Save">
+          <input type="button" class="btn btn-secondary" id="btn-product-edit-cancel" value="Cancel">
+        </div>
+      </form>
+    </div>
+
+    <!-- BASKET -->
+    <div id="view-basket" class="container" hidden>
+      <h1>My basket</h1>
+      <div id="table-basket"></div>
+      <dl>
+        <dt>Total value of basket:</dt>
+        <dd id="total-basket"></dd>
+      </dl>
     </div>
 
 

@@ -1,4 +1,4 @@
-import { contactList } from "../../contact.js"
+import { contactList } from "../../models/contact.js"
 
 export function renderInfoContact(contact) {
     document.getElementById('info-contact-firstname').innerText = contact.firstname
@@ -13,7 +13,7 @@ export function renderInfoContact(contact) {
     const deleteBtn = document.getElementById('btn-contact-info-delete')
     deleteBtn.addEventListener('click', (e) => {
         e.preventDefault()
-        contactList.remove(contact)
+        contactList.delete(contact)
         document.dispatchEvent(new CustomEvent('listContactView'))
     })
 }

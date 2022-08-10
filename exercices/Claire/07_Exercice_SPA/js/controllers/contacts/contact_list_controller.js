@@ -1,4 +1,4 @@
-import { contactList } from '../../contact.js'
+import { contactList } from '../../models/contact.js'
 
 
 const contactTable = document.getElementById('data-contacts')
@@ -57,7 +57,7 @@ function getAsHtmlRow(contact) {
     deleteBtn.value = 'Delete'
     deleteBtn.addEventListener('click', (e) => {
         e.preventDefault()
-        contactList.remove(contact)
+        contactList.delete(contact)
         renderListData()
     })
     form.appendChild(deleteBtn)

@@ -1,55 +1,94 @@
-import { renderEditContact } from "./contacts/contact_edit_controller.js"
-import { renderInfoContact } from "./contacts/contact_info_controller.js"
 import { renderListData } from "./contacts/contact_list_controller.js"
+import { renderInfoContact } from "./contacts/contact_info_controller.js"
+import { renderEditContact } from "./contacts/contact_edit_controller.js"
+import { renderProductData } from "./shop/product_list_controller.js"
+import { renderInfoProduct } from "./shop/product_info_controller.js"
+import { renderEditProduct } from "./shop/product_edit_controller.js"
+import { renderBasket } from "./shop/basket_controller.js"
+
 
 const navlinkHome = document.getElementById('navlink-home')
 navlinkHome.addEventListener('click', (e) => {
-    renderHome()
+    home()
 })
-const navlinkList = document.getElementById('navlink-list')
-navlinkList.addEventListener('click', (e) => {
-    renderContactList()
+const navlinkContacts = document.getElementById('navlink-contacts')
+navlinkContacts.addEventListener('click', (e) => {
+    contacts()
+})
+const navlinkShop = document.getElementById('navlink-shop')
+navlinkShop.addEventListener('click', (e) => {
+    shop()
+})
+const navlinkBasket = document.getElementById('navlink-basket')
+navlinkBasket.addEventListener('click', (e) => {
+    basket()
 })
 
 document.addEventListener('homeView', (e) => {
-    renderHome()
+    home()
 })
 
+/* -------- CONTACTS --------  */
 document.addEventListener('listContactView', (e) => {
-    renderContactList()
+    contacts()
 })
 
 document.addEventListener('infoContactView', (e) => {
-    renderContactInfo(e.detail)
+    renderInfoContact(e.detail)
+    activeNavlink('none')
+    activeView('view-contact-info')
 })
 
 document.addEventListener('editContactView', (e) => {
-    renderContactEdit(e.detail)
+    renderEditContact(e.detail)
+    activeNavlink('none')
+    activeView('view-contact-edit')
 })
 
-renderContactList()
+/* --------   SHOP    --------  */
+document.addEventListener('shopView', (e) => {
+    shop()
+})
 
-export function renderHome() {
+document.addEventListener('infoProductView', (e) => {
+    renderInfoProduct(e.detail)
+    activeNavlink('none')
+    activeView('view-product-info')
+})
+
+document.addEventListener('editProductView', (e) => {
+    renderEditProduct(e.detail)
+    activeNavlink('none')
+    activeView('view-product-edit')
+})
+
+document.addEventListener('basketView', (e) => {
+    basket()
+})
+
+home()
+
+function home() {
     activeNavlink('navlink-home')
     activeView('view-home')
 }
 
-export function renderContactList() {
+function contacts() {
     renderListData()
-    activeNavlink('navlink-list')
-    activeView('view-contact-list')    
+    activeNavlink('navlink-contacts')
+    activeView('view-contact-list') 
 }
 
-export function renderContactInfo(contact) {
-    renderInfoContact(contact)
-    activeNavlink('none')
-    activeView('view-contact-info')
+function shop() {
+    renderProductData()
+    activeNavlink('navlink-shop')
+    activeView('view-shop')
 }
 
-export function renderContactEdit(contact) {
-    renderEditContact(contact)
-    activeNavlink('none')
-    activeView('view-contact-edit')
+function basket() {
+    renderBasket()
+    activeNavlink('navlink-basket')
+    activeView('view-basket')
 }
 
 function activeNavlink(id) {

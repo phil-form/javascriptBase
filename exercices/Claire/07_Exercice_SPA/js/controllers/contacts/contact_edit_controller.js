@@ -1,4 +1,4 @@
-import { contactList } from "../../contact.js"
+import { contactList } from "../../models/contact.js"
 
 const form = document.forms['form-edit-contact']
 const inputId = document.getElementById('input-contact-edit-id')

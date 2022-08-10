@@ -44,7 +44,7 @@ class ContactList {
         return contact;
     }
 
-    remove(contact) {
+    delete(contact) {
         for(let i in this.contacts) {
             if(this.contacts[i].id == contact.id) {
                 this.contacts.splice(i, 1)
