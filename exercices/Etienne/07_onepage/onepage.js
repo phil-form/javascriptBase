@@ -199,8 +199,10 @@ function addEditUser(idx)
     let rbtn = document.createElement("tr");
     let cbtn = document.createElement("td");
     cbtn.colSpan = 2;
-    let ibtn = addButton((idx == -1) ? "Create" : "Update", "newusr", -1, "btn btn-warning");
+    let ibtn = addButton((idx == -1) ? "Create" : "Update", "newusr", -1, "btn btn-warning"  );
+    let iccl = addButton(              "Cancel"           , "cancel", -1, "btn btn-secondary");
     cbtn.appendChild(ibtn);
+    cbtn.appendChild(iccl);
     rbtn.appendChild(cbtn);
     tb.appendChild(rbtn);
     frnew.appendChild(tb);
@@ -251,6 +253,14 @@ function addEditUser(idx)
         // save data
         sessionStorage.setItem(storUsr, JSON.stringify(users));
         // display all users
+        usersList();
+
+    }) // ibtn.addEventListener("click", e
+
+    iccl.addEventListener("click", e => {
+        e.preventDefault();
+
+        // back to users list
         usersList();
 
     }) // ibtn.addEventListener("click", e
@@ -482,9 +492,10 @@ function productsList()
     tf2.appendChild(addInput("number", "prdprix", -1, "hidden"));
     tfr.appendChild(tf2);
 
-    // col 3: button submit, hidden !
+    // col 3: buttons submit & cancel, hidden !
     let tf3 = document.createElement("td");
-    tf3.appendChild(addButton("Create", "cprod", -1, "btn btn-primary", "hidden"));
+    tf3.appendChild(addButton("Create", "cprod" , -1, "btn btn-primary"  , "hidden"));
+    tf3.appendChild(addButton("Cancel", "cancel", -1, "btn btn-secondary", "hidden"));
     tfr.appendChild(tf3);
 
     tbfprd.appendChild(tfr);
@@ -495,20 +506,26 @@ function productsList()
     btnnprod.addEventListener("click", e => {
         e.preventDefault();
 
-        // show fields & button
-        let inpdesc  = document.getElementById("prddesc" );
-        let inpprix  = document.getElementById("prdprix" );
-        let btncprod = document.getElementById("btncprod");
-        inpdesc.removeAttribute ("hidden");
-        inpdesc.setAttribute    ("enabled", "");
-        inpprix.removeAttribute ("hidden");
-        inpprix.setAttribute    ("enabled", "");
-        btncprod.removeAttribute("hidden");
-        btncprod.setAttribute   ("enabled", "");
+        // hide "New Product", show other fields & button
+        let btnnprod  = document.getElementById("btnnprod" );
+        let inpdesc   = document.getElementById("prddesc"  );
+        let inpprix   = document.getElementById("prdprix"  );
+        let btncprod  = document.getElementById("btncprod" );
+        let btncancel = document.getElementById("btncancel");
+        btnnprod.removeAttribute ("enabled"    );
+        btnnprod.setAttribute    ("hidden" , "");
+        inpdesc.removeAttribute  ("hidden"     );
+        inpdesc.setAttribute     ("enabled", "");
+        inpprix.removeAttribute  ("hidden"     );
+        inpprix.setAttribute     ("enabled", "");
+        btncprod.removeAttribute ("hidden"     );
+        btncprod.setAttribute    ("enabled", "");
+        btncancel.removeAttribute("hidden"     );
+        btncancel.setAttribute   ("enabled", "");
 
     }) // btnnprod.addEventListener("click",
 
-    // button create product (right): fields filled, create
+    // button create product (right 1): fields filled, create
     let btncprod = document.getElementById("btncprod");
     btncprod.addEventListener("click", e => {
         e.preventDefault();
@@ -530,6 +547,16 @@ function productsList()
         productsList();
 
     }) // btncprod.addEventListener("click",
+
+    // button cancel product (right 1): fields filled, create
+    let btncancel = document.getElementById("btncancel");
+    btncancel.addEventListener("click", e => {
+        e.preventDefault();
+
+        // refresh page
+        productsList();
+
+    }) // btncancel.addEventListener("click",
 
 } // productsList
 
