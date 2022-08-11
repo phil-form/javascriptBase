@@ -43,17 +43,11 @@ class Shop {
     }
     
     add_item(item) {
-        const update = this.get(item.id);
-        if (update) {
-            if (this.items[update].stock)
-                this.items[update].stock += parseInt(item.qty);
-            else
-                this.items[update].stock = parseInt(item.qty);
-        }
-        else {
+        const index = Object.keys(this.items).indexOf(item.id);
+        if (index === -1)
             this.items[item.id] = item;
-            this.items[item.id].stock = parseInt(item.qty);
-        }
+        else
+            this.items[item.id].qty += parseInt(item.qty);
         save();
     }
 
@@ -63,13 +57,6 @@ class Shop {
         new_item.qty = qty;
         item.stock -= parseInt(qty);
         basket.add_item(new_item);
-    }
-
-    get(key) {
-        for (let search in this.items)
-            if (search === key)
-                return search
-        return null;
     }
 
     get_existing_or_new_id(item_name) {
@@ -559,7 +546,7 @@ function shop_page() {
             document.getElementById('item_name').value,
             document.getElementById('item_price').value
         )
-        new_item.qty = parseInt(document.getElementById('item_quantity').value);
+        new_item.stock = parseInt(document.getElementById('item_quantity').value);
         shop.add_item(new_item);
         current_page = "shop_add";
         shop_page();
