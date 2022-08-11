@@ -1,18 +1,13 @@
-class BasketItem {
+import { BaseService } from "./base_service.js";
+import { BasketItem } from "../models/basket_item.js"
 
-    constructor(product, quantity) {
-        this.product = product;
-        this.quantity = quantity;
-    }
-
-}
-
-export class Basket {
+export class BasketService extends BaseService {
 
     constructor() {
+        let config = {};
+        super(config);
         this.load();
     }
-
 
     load() {
         const basket = JSON.parse(localStorage.getItem('basket'));
@@ -65,7 +60,3 @@ export class Basket {
     }
 
 }
-
-export const basket = new Basket()
-
-

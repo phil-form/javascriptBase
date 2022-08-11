@@ -35,14 +35,17 @@
 
     <div id="content" class="container"></div>
 
-    <!-- CONTACT LIST VIEW -->
-    <div id="view-contact-list" class="container" hidden>
+    <!-- CONTACT LIST TEMPLATE -->
+    <template id="contact-list-template">
+      <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
       <h1>List of contacts</h1>
       <input type="button" class="btn btn-primary" id="btn-contact-list-new" value="New contact">
       <div id="data-contacts"></div>
-    </div>
+    </template>
+
     <!-- CONTACT CREATE/EDIT VIEW -->
-    <div id="view-contact-edit" class="container" hidden>
+    <template id="contact-edit-template">
+      <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
       <h1>Create/Edit contact</h1>
       <form name="form-edit-contact">
         <input type="number" id="input-contact-edit-id" hidden>
@@ -64,10 +67,11 @@
           <input type="button" class="btn btn-secondary" id="btn-contact-edit-cancel" value="Cancel">
         </div>
       </form>
-    </div>
+    </template>
 
     <!-- CONTACT INFO VIEW -->
-    <div id="view-contact-info" class="container" hidden>
+    <template id="contact-info-template">
+      <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
       <h1>Info of contact</h1>
       <dl>
         <dt>First name:</dt>
@@ -81,17 +85,19 @@
         <input type="button" class="btn btn-primary" id="btn-contact-info-edit" value="Edit">
         <input type="button" class="btn btn-danger" id="btn-contact-info-delete" value="Delete">
       </div>
-    </div>
+    </template>
 
     <!-- SHOP PRODUCT LIST -->
-    <div id="view-shop" class="container" hidden>
+    <template id="product-list-template">
+      <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
       <h1>Shop</h1>
       <input type="button" class="btn btn-primary" id="btn-product-new" value="New product">
       <div id="data-products"></div>
-    </div>
+    </template>
 
     <!-- PRODUCT INFO -->
-    <div id="view-product-info" class="container" hidden>
+    <template id="product-info-template">
+      <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
       <h1>Info of product</h1>
       <dl>
         <dt>Name:</dt>
@@ -108,10 +114,11 @@
           <input type="button" class="btn btn-danger" id="btn-product-info-delete" value="Delete">
         </div>
       </div>
-    </div>
+    </template>
 
     <!-- PRODUCT EDIT -->
-    <div id="view-product-edit" class="container" hidden>
+    <template id="product-edit-template">
+      <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
       <h1>Create/Edit product</h1>
       <form name="form-edit-product">
         <!-- <input type="number" id="input-product-edit-id" hidden> -->
@@ -128,20 +135,21 @@
           <input type="button" class="btn btn-secondary" id="btn-product-edit-cancel" value="Cancel">
         </div>
       </form>
-    </div>
+    </template>
 
     <!-- BASKET -->
-    <div id="view-basket" class="container" hidden>
+    <template id="basket-template">
+      <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
       <h1>My basket</h1>
       <div id="table-basket"></div>
       <dl>
         <dt>Total value of basket:</dt>
         <dd id="total-basket"></dd>
       </dl>
-    </div>
+    </template>
 
 
-    <script type="module" src="./js/controllers/controller.js"></script>
+    <script type="module" src="./js/app.js"></script>
     <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>

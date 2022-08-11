@@ -1,97 +1,84 @@
-import { renderListData } from "./contacts/contact_list_controller.js"
-import { renderInfoContact } from "./contacts/contact_info_controller.js"
-import { renderEditContact } from "./contacts/contact_edit_controller.js"
-import { renderProductData } from "./shop/product_list_controller.js"
-import { renderInfoProduct } from "./shop/product_info_controller.js"
-import { renderEditProduct } from "./shop/product_edit_controller.js"
-import { renderBasket } from "./shop/basket_controller.js"
+import { BasketService } from "../services/basket_service.js"
+import { ContactService } from "../services/contact_service.js"
+import { ProductService } from "../services/product_service.js"
+import { ContactListComponent } from "../components/contacts/contact_list_component.js"
+import { ContactInfoComponent } from "../components/contacts/contact_info_component.js"
+import { ContactEditComponent } from "../components/contacts/contact_edit_component.js";
+import { ProductListComponent } from "../components/products/product_list_component.js";
+import { ProductEditComponent } from "../components/products/product_edit_component.js"
+import { ProductInfoComponent } from "../components/products/product_info_component.js"
+import { BasketComponent } from "../components/basket_component.js"
 
+const content = document.getElementById('content');
+const contactService = new ContactService();
+const productService = new ProductService();
+const basketService = new BasketService();
 
-const navlinkContacts = document.getElementById('navlink-contacts')
-navlinkContacts.addEventListener('click', (e) => {
-    contacts()
-})
-const navlinkShop = document.getElementById('navlink-shop')
-navlinkShop.addEventListener('click', (e) => {
-    shop()
-})
-const navlinkBasket = document.getElementById('navlink-basket')
-navlinkBasket.addEventListener('click', (e) => {
-    basket()
-})
+export function init() {
+    
+    /* -------- CONTACTS --------  */
+    document.addEventListener('listContactView', (e) => {
+        render('contact-list');
+    });
 
-/* -------- CONTACTS --------  */
-document.addEventListener('listContactView', (e) => {
-    contacts()
-})
+    document.addEventListener('infoContactView', (e) => {
+        render('contact-info', e.detail);
+    });
 
-document.addEventListener('infoContactView', (e) => {
-    contactInfo(e.detail)
-})
+    document.addEventListener('editContactView', (e) => {
+        render('contact-edit', e.detail);
+    });
 
-document.addEventListener('editContactView', (e) => {
-    contactEdit(e.detail)
-})
+    /* --------   SHOP    --------  */
+    document.addEventListener('shopView', (e) => {
+        render('product-list');
+    });
 
-/* --------   SHOP    --------  */
-document.addEventListener('shopView', (e) => {
-    shop()
-})
+    document.addEventListener('infoProductView', (e) => {
+        render('product-info', e.detail);
+    });
 
-document.addEventListener('infoProductView', (e) => {
-    productInfo(e.detail)
-})
+    document.addEventListener('editProductView', (e) => {
+        render('product-edit', e.detail);
+    });
 
-document.addEventListener('editProductView', (e) => {
-    productEdit(e.detail)
-})
-
-document.addEventListener('basketView', (e) => {
-    basket()
-})
-
-shop()
-
-function contacts() {
-    renderListData()
-    activeNavlink('navlink-contacts')
-    activeView('view-contact-list') 
+    document.addEventListener('basketView', (e) => {
+        render('basket')
+    });
 }
 
-function contactInfo(contact) {
-    renderInfoContact(contact)
-    activeNavlink('none')
-    activeView('view-contact-info')
-}
-
-function contactEdit(contact) {
-    renderEditContact(e.detail)
-    activeNavlink('none')
-    activeView('view-contact-edit')
-}
-
-function shop() {
-    renderProductData()
-    activeNavlink('navlink-shop')
-    activeView('view-shop')
-}
-
-function productInfo(product) {
-    renderInfoProduct(e.detail)
-    activeNavlink('none')
-    activeView('view-product-info')
-}
-
-function productEdit(product) {
-    renderEditProduct(e.detail)
-    activeNavlink('none')
-    activeView('view-product-edit')
-}
-
-function basket() {
-    renderBasket()
-    activeNavlink('navlink-basket')
-    activeView('view-basket')
+function render(viewName, data) {
+    content.innerHTML = ''
+    switch(viewName) {
+        case 'contact-list':
+            content.appendChild(new ContactListComponent(contactService));
+            activeNavlink('navlink-contacts');
+            break;
+        case 'contact-edit':
+            content.appendChild(new ContactEditComponent(contactService, data));
+            activeNavlink('none');
+            break;
+        case 'contact-info':
+            content.appendChild(new ContactInfoComponent(contactService, data));
+            activeNavlink('none');
+            break;
+        case 'product-list':
+            content.appendChild(new ProductListComponent(productService, basketService));
+            activeNavlink('navlink-shop');
+            break;
+        case 'product-edit':
+            content.appendChild(new ProductEditComponent(productService, product));
+            activeNavlink('none');
+            break;
+        case 'product-info':
+            content.appendChild(new ProductInfoComponent(productService, basketService, data));
+            activeNavlink('none');
+            break;
+        case 'basket':
+            content.appendChild(new BasketComponent(basketService));
+            activeNavlink('navlink-basket');
+            break;
+    }
 }
 
 function activeNavlink(id) {
@@ -101,17 +88,6 @@ function activeNavlink(id) {
             nav.classList.add('active')
         } else if (nav.classList.contains('active')) {
             nav.classList.remove('active')
-        }
-    }
-}
-
-function activeView(id) {
-    const views = document.querySelectorAll('.container')
-    for (const view of views) {
-        if(view.id == id) {
-            view.hidden = false
-        } else {
-            view.hidden = true
         }
     }
 }
