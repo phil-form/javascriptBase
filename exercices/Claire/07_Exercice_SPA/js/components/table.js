@@ -117,7 +117,7 @@ export class TableComponent
 
         for(const action of tableConfig.actions)
         {
-            // { actionName: '', actionHref: '', actionCb: (event) => T, buttonType: }
+            // { actionName: '', actionHref: '', actionCb: (event), buttonType: number, hasForm: boolean}
             let actionBtn = document.createElement('button');
             actionBtn.innerText = action.actionName;
 
@@ -127,7 +127,7 @@ export class TableComponent
 
                 let data = row;
 
-                if(action.buttonType === 3)
+                if(action.hasForm)
                 {
                     const formId = tableConfig.form.formName + row[tableConfig.form.formIdValue];
                     data.form = new FormData(this.form[formId]);
@@ -136,9 +136,8 @@ export class TableComponent
                 action.actionCb(data);
             });
 
-
-            actionBtn.classList.add('btn');
-            actionBtn.classList.add(action.buttonType === 1 ? 'btn-success' : action.buttonType === 2 ? 'btn-danger' : 'btn-primary');
+            const cssClass = this.getCssClass(action.buttonType)
+            actionBtn.classList.add('btn', cssClass);
             div.appendChild(actionBtn);
             actionsTd.appendChild(div);
         }
@@ -190,5 +189,23 @@ export class TableComponent
                 }
                 this.processData();
             })
+    }
+
+    getCssClass(btnType) {
+        let cssClass = '';
+        switch(btnType) {
+            case 1:
+                return 'btn-primary';
+            case 2:
+                return 'btn-secondary';
+            case 3:
+                return 'btn-success';
+            case 4:
+                return 'btn-info';
+            case 5:
+                return 'btn-danger';
+            default:
+                return 'btn-primary';
+        }
     }
 }

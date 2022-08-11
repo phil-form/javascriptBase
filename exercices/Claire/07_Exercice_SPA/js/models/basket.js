@@ -28,11 +28,11 @@ export class Basket {
      * @param {Product} product 
      * @param {number} quantity 
      */
-    add(product, quantity) {
+    add(product, quantity, update=false) {
         let found = false;
         for(let item of this.items) {
             if(item.product.name == product.name) {
-                item.quantity += quantity;
+                item.quantity = update ? quantity : item.quantity + quantity
                 found = true;
             }
         }

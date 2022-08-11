@@ -15,32 +15,30 @@ export function renderBasket() {
         actions: [
             { actionName: 'Update quantity', actionCb: (data) =>
                 {
-                    console.log(data.product)
-                    console.log(data.form.get('quantity'))
-                    basket.add(data.product, parseInt(data.form.get('quantity')))
+                    basket.add(data.product, parseInt(data.form.get('quantity')), true)
                     document.dispatchEvent(new Event('basketView'))
                 },
+                hasForm: true,
                 buttonType: 3,
             },
-            { actionName: 'Details', actionCb: (data) =>
+            { actionName: 'Info', actionCb: (data) =>
                 {
                     document.dispatchEvent(new CustomEvent('infoProductView', {detail: data.product}))
                 },
-                buttonType: 1
+                buttonType: 4
             },
-            { actionName: 'Remove', actionCb: (data) =>
+            { actionName: 'Delete', actionCb: (data) =>
                 {
                     basket.delete(data.product)
                     document.dispatchEvent(new Event('basketView'))
                 },
-                buttonType: 2
+                buttonType: 5
             },
         ],
         form: {
             formName: 'itemForm',
             formIdValue: 'name',
             formFields: [
-                // { fieldName: 'product', value: 'product', type: 'hidden' },
                 { fieldName: 'quantity', value: 'quantity', type: 'number' }
             ]
         }
