@@ -9,8 +9,10 @@ export function create_table(tableConfig) {
     const thead = document.createElement('thead');
     const thead_tr = thead.insertRow();
     const tbody = document.createElement('tbody');
+    const tfoot = document.createElement('tfoot');
     table.appendChild(thead);
     table.appendChild(tbody);   
+    table.appendChild(tfoot);   
 
     for (let columnName in tableConfig.thead) {
         const th = document.createElement('th');

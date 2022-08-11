@@ -1,20 +1,17 @@
+import {list_view, register_view, basket_page, shop_page} from "./view.js"
+import { NavBar } from "./nav_bar.js";
 
 
-// function load_users() {
-//     const stored_users = sessionStorage.getItem('users');
-//     if (!stored_users) {
-//         users = [];
-//         save();
-//     } else {
-//         users = JSON.parse(stored_users);
-//     }
-// }
+const nav = document.getElementById("nav_bar");
+console.log(nav.firstChild);
+const nav_config = [
+    {title: "Register", callback: register_view},
+    {title: "Home",     callback: list_view},
+    {title: "Shop",     callback: shop_page},
+    {title: "Basket",   callback: basket_page}
+];
+nav.appendChild(new NavBar(nav_config));
 
+const root = document.getElementById("root");
 
-import {list_view, register_view, edit_page, info_page,
-        basket_page, shop_page, users, shop, basket} from "./view.js"
-
-const root   = document.getElementById("root");
-
-// basket_page();
 list_view();

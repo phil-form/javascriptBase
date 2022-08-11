@@ -11,7 +11,7 @@ export function list_view() {
     if (current_page === "list_page")
         return
     current_page = "list_page";
-    nav_bar();
+    
     clear_root();
     
     const users_table = document.createElement('table');
@@ -121,7 +121,7 @@ export function register_view() {
     if (current_page === "register_page")
     return
     current_page = "register_page";
-    nav_bar();
+    
     clear_root();
     
     const user_create_form = document.createElement('form');
@@ -202,7 +202,7 @@ export function edit_page(user) {
     if (current_page === "edit_page")
     return
     current_page = "edit_page";
-    nav_bar();
+    
     clear_root();
     
     const user_create_form = document.createElement('form');
@@ -288,7 +288,7 @@ export function info_page(user) {
     if (current_page === "info_page")
     return
     current_page = "info_page";
-    nav_bar();
+    
     clear_root();
     
     const elem = document.createElement('p');
@@ -322,7 +322,7 @@ export function basket_page() {
     if (current_page === "basket_page")
         return
     current_page = "basket_page";
-    nav_bar();
+    
     clear_root();
 
     const basket_table_config = {
@@ -360,7 +360,7 @@ export function shop_page() {
     if (current_page === "shop_page")
         return
     current_page = "shop_page";
-    nav_bar();
+    
     clear_root();
 
     const shop_add_item_form = document.createElement('form');
@@ -494,55 +494,6 @@ export function shop_page() {
         })
     }
 }
-
-export const nav = document.getElementById("nav_bar");
-export function nav_bar() {
-    while (nav.firstChild)
-        nav.removeChild(nav.firstChild);
-    
-    const nav_bar = document.createElement('form');
-    nav.appendChild(nav_bar);
-    
-    const create_user_button = document.createElement('button');
-    create_user_button.innerText = 'Register';
-    create_user_button.className = "btn btn-link";
-    nav_bar.appendChild(create_user_button);
-    
-    const list_users_button = document.createElement('button');
-    list_users_button.innerText = 'Home';
-    list_users_button.className = "btn btn-link";
-    nav_bar.appendChild(list_users_button);
-
-    const shop_button = document.createElement('button');
-    shop_button.innerText = 'Shop';
-    shop_button.className = "btn btn-link";
-    nav_bar.appendChild(shop_button);
-
-    const basket_button = document.createElement('button');
-    basket_button.innerText = 'Basket';
-    basket_button.className = "btn btn-link";
-    nav_bar.appendChild(basket_button);
-    
-    create_user_button.addEventListener('click', (e) => {
-        e.preventDefault();
-        register_view();
-    });
-    
-    list_users_button.addEventListener('click', (e) => {
-        e.preventDefault();
-        list_view();
-    })
-
-    shop_button.addEventListener('click', (e) => {
-        e.preventDefault();
-        shop_page();
-    })
-
-    basket_button.addEventListener('click', (e) => {
-        e.preventDefault();
-        basket_page();
-    })
-};
 
 export function my_remove(user) {
     current_page = "remove";
