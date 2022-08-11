@@ -18,9 +18,6 @@
       
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
           <ul class="navbar-nav mr-auto">
-            <li id="navlink-home" class="nav-item">
-              <a class="nav-link">Home</a>
-            </li>
             <li id="navlink-contacts" class="nav-item">
               <a class="nav-link">Contacts</a>
             </li>
@@ -36,27 +33,13 @@
         </div>
     </nav>
 
-    <!-- HOME VIEW -->
-    <div id="view-home" class="container" hidden>
-        <h1>Home</h1>
-   </div>
+    <div id="content" class="container"></div>
 
     <!-- CONTACT LIST VIEW -->
     <div id="view-contact-list" class="container" hidden>
       <h1>List of contacts</h1>
       <input type="button" class="btn btn-primary" id="btn-contact-list-new" value="New contact">
-      <table class="table">
-        <thead>
-          <tr>
-            <th scope="col">#</th>
-            <th scope="col">Firstname</th>
-            <th scope="col">Lastname</th>
-            <th scope="col">Email</th>
-            <th scope="col">Actions</th>
-          </tr>
-        </thead>
-        <tbody id="data-contacts"></tbody>
-      </table>
+      <div id="data-contacts"></div>
     </div>
     <!-- CONTACT CREATE/EDIT VIEW -->
     <div id="view-contact-edit" class="container" hidden>
@@ -105,19 +88,6 @@
       <h1>Shop</h1>
       <input type="button" class="btn btn-primary" id="btn-product-new" value="New product">
       <div id="data-products"></div>
-      <!--
-      <table class="table">
-        <thead>
-          <tr>
-            <th scope="col">Name</th>
-            <th scope="col">Price</th>
-            <th scope="col">Actions</th>
-            <th scope="col">Admin actions</th>
-          </tr>
-        </thead>
-        <tbody id="data-products"></tbody>
-      </table>
-      -->
     </div>
 
     <!-- PRODUCT INFO -->

@@ -7,10 +7,6 @@ import { renderEditProduct } from "./shop/product_edit_controller.js"
 import { renderBasket } from "./shop/basket_controller.js"
 
 
-const navlinkHome = document.getElementById('navlink-home')
-navlinkHome.addEventListener('click', (e) => {
-    home()
-})
 const navlinkContacts = document.getElementById('navlink-contacts')
 navlinkContacts.addEventListener('click', (e) => {
     contacts()
@@ -24,25 +20,17 @@ navlinkBasket.addEventListener('click', (e) => {
     basket()
 })
 
-document.addEventListener('homeView', (e) => {
-    home()
-})
-
 /* -------- CONTACTS --------  */
 document.addEventListener('listContactView', (e) => {
     contacts()
 })
 
 document.addEventListener('infoContactView', (e) => {
-    renderInfoContact(e.detail)
-    activeNavlink('none')
-    activeView('view-contact-info')
+    contactInfo(e.detail)
 })
 
 document.addEventListener('editContactView', (e) => {
-    renderEditContact(e.detail)
-    activeNavlink('none')
-    activeView('view-contact-edit')
+    contactEdit(e.detail)
 })
 
 /* --------   SHOP    --------  */
@@ -51,27 +39,18 @@ document.addEventListener('shopView', (e) => {
 })
 
 document.addEventListener('infoProductView', (e) => {
-    renderInfoProduct(e.detail)
-    activeNavlink('none')
-    activeView('view-product-info')
+    productInfo(e.detail)
 })
 
 document.addEventListener('editProductView', (e) => {
-    renderEditProduct(e.detail)
-    activeNavlink('none')
-    activeView('view-product-edit')
+    productEdit(e.detail)
 })
 
 document.addEventListener('basketView', (e) => {
     basket()
 })
 
-home()
-
-function home() {
-    activeNavlink('navlink-home')
-    activeView('view-home')
-}
+shop()
 
 function contacts() {
     renderListData()
@@ -79,10 +58,34 @@ function contacts() {
     activeView('view-contact-list') 
 }
 
+function contactInfo(contact) {
+    renderInfoContact(contact)
+    activeNavlink('none')
+    activeView('view-contact-info')
+}
+
+function contactEdit(contact) {
+    renderEditContact(e.detail)
+    activeNavlink('none')
+    activeView('view-contact-edit')
+}
+
 function shop() {
     renderProductData()
     activeNavlink('navlink-shop')
     activeView('view-shop')
+}
+
+function productInfo(product) {
+    renderInfoProduct(e.detail)
+    activeNavlink('none')
+    activeView('view-product-info')
+}
+
+function productEdit(product) {
+    renderEditProduct(e.detail)
+    activeNavlink('none')
+    activeView('view-product-edit')
 }
 
 function basket() {
