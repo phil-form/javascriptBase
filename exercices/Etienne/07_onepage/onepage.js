@@ -1,4 +1,6 @@
-let opbody = document.getElementById("thebody")
+let opbody = document.getElementById("thebody");
+let errBox = document.getElementById("toastBox");
+let errMsg = document.getElementById("toastText");
 
 class User {
     constructor(first, last, email) {
@@ -242,11 +244,11 @@ function addEditUser(idx)
         let eml = document.getElementById("email" ).value;
     
         // check
-        if (fnm.trim() == "") return;
-        if (lnm.trim() == "") return;
-        if (eml.trim() == "") return;
-        if (eml.match("[A-Za-z]+[A-Za-z0-9_\-]*@[A-Za-z0-9]+\.[a-z]{2,3}") === null) return;
-        if (emls[eml]) return;
+        if (notCheck(fnm.trim() == "", 'Field "Firstname" must be filled')) return;
+        if (notCheck(lnm.trim() == "", 'Field "Lastname" must be filled')) return;
+        if (notCheck(eml.trim() == "", 'Field "E-mail" must be filled')) return;
+        if (notCheck(eml.match(/[A-Za-z]+[A-Za-z0-9_\-\.]*@[A-Za-z0-9]+\.[a-z]{2,3}/) === null, 'Field "E-mail" is not a valid e-mail adress')) return;
+        if (notCheck(emls[eml], 'E-mail in field "E-mail" already exists')) return;
 
         // va bene !
         if (idx == -1)
@@ -474,9 +476,9 @@ function productsList()
             e.preventDefault();
 
             // check
-            if (iqty.value.trim()    ==  "" ) return;
-            if (parseInt(iqty.value) === NaN) return;
-            if (parseInt(iqty.value) <=   0 ) return;
+            if (notCheck(iqty.value.trim()    ==  "" , 'Field "Quantity" must be filled'           )) return;
+            if (notCheck(parseInt(iqty.value) === NaN, 'Field "Quantity" must be is not a number'  )) return;
+            if (notCheck(parseInt(iqty.value) <=   0 , 'Field "Quantity" must be a positive number')) return;
 
             // get product and qty
             let pr  = prods[prd];
@@ -566,10 +568,10 @@ function productsList()
         let inpdesc = document.getElementById("prddesc");
         let inpprix = document.getElementById("prdprix");
         // check
-        if (inpdesc.value.trim()    ==  "" ) return;
-        if (inpprix.value.trim()    ==  "" ) return;
-        if (parseInt(inpprix.value) === NaN) return;
-        if (parseInt(inpprix.value) <=   0 ) return;
+        if (notCheck(inpdesc.value.trim()    ==  "" , 'The field "Description" must be filled'     )) return;
+        if (notCheck(inpprix.value.trim()    ==  "" , 'The field "Price" must be filled'           )) return;
+        if (notCheck(parseInt(inpprix.value) === NaN, 'The field "Price" must be a number'         )) return;
+        if (notCheck(parseInt(inpprix.value) <=   0 , 'The field "Price" must be a positive number')) return;
         // create product
         let prd = new Produit(inpdesc.value, parseInt(inpprix.value));
         // add to array and storage
@@ -913,3 +915,18 @@ function getUserSelected()
     return null;
 
 } // getUserSelected
+
+// return false if tst is true
+// display erreor message and return true is tst is false
+function notCheck(tst, msg = "error ...")
+{
+    if (!tst) return false;
+
+    errMsg.innerText = msg;
+
+    let toast = new bootstrap.Toast(errBox);
+    toast.show();
+
+    return true;
+
+} // notCheck
