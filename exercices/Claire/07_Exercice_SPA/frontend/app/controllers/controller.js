@@ -3,8 +3,8 @@ import { ContactService } from "../services/contact_service.js"
 import { ProductService } from "../services/product_service.js"
 import { ContactListComponent } from "../components/contacts/contact_list_component.js"
 import { ContactInfoComponent } from "../components/contacts/contact_info_component.js"
-import { ContactEditComponent } from "../components/contacts/contact_edit_component.js";
-import { ProductListComponent } from "../components/products/product_list_component.js";
+import { ContactEditComponent } from "../components/contacts/contact_edit_component.js"
+import { ProductListComponent } from "../components/products/product_list_component.js"
 import { ProductEditComponent } from "../components/products/product_edit_component.js"
 import { ProductInfoComponent } from "../components/products/product_info_component.js"
 import { BasketComponent } from "../components/basket_component.js"
