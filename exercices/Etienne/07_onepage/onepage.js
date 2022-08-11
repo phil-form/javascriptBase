@@ -245,8 +245,8 @@ function addEditUser(idx)
     
         // check
         if (notCheck(fnm.trim() == "", 'Field "Firstname" must be filled')) return;
-        if (notCheck(lnm.trim() == "", 'Field "Lastname" must be filled')) return;
-        if (notCheck(eml.trim() == "", 'Field "E-mail" must be filled')) return;
+        if (notCheck(lnm.trim() == "", 'Field "Lastname" must be filled' )) return;
+        if (notCheck(eml.trim() == "", 'Field "E-mail" must be filled'   )) return;
         if (notCheck(eml.match(/[A-Za-z]+[A-Za-z0-9_\-\.]*@[A-Za-z0-9]+\.[a-z]{2,3}/) === null, 'Field "E-mail" is not a valid e-mail adress')) return;
         if (notCheck(emls[eml], 'E-mail in field "E-mail" already exists')) return;
 
@@ -647,9 +647,9 @@ function showBasket()
                 // get qty from screen
                 let qty = document.getElementById(`qtyrem${idx}`);
                 // check
-                if (qty.value.trim()    ==  "" ) return;
-                if (parseInt(qty.value) === NaN) return;
-                if (parseInt(qty.value) <=   0 ) return;
+                if (notCheck(qty.value.trim()    ==  "" , 'Field on the lefet must be filled'  )) return;
+                if (notCheck(parseInt(qty.value) === NaN, 'Field on the lefet must be a number')) return;
+                if (notCheck(parseInt(qty.value) <=   0 , 'Field on the lefet must be positive')) return;
                 // update item in array
                 itm.qte -= parseInt(qty.value);
                 // no more ? remove !
