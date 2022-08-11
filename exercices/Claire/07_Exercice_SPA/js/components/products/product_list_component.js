@@ -1,5 +1,6 @@
 import { TableComponent } from '../generics/table.js'
 import { Component } from "../generics/base_component.js";
+import { routeTo } from '../../app.js';
 
 
 export class ProductListComponent extends Component {
@@ -15,7 +16,7 @@ export class ProductListComponent extends Component {
         const newBtn = this.root.getElementById('btn-product-new');
         newBtn.addEventListener('click', (e) => {
             e.preventDefault();
-            document.dispatchEvent(new CustomEvent('editProductView'));
+            routeTo('product-edit');
         });
 
         const data = this.productService.products;
@@ -29,23 +30,23 @@ export class ProductListComponent extends Component {
             actions: [
                 { actionName: 'Add to basket', actionCb: (data) => {
                         this.basketService.add(data, 1);
-                        document.dispatchEvent(new Event('basketView'));
+                        routeTo('basket');
                     },
                     buttonType: 3,
                 },
                 { actionName: 'Info', actionCb: (data) => {
-                        document.dispatchEvent(new CustomEvent('infoProductView', {detail: data}));
+                        routeTo('product-info', data);
                     },
                     buttonType: 4
                 },
                 { actionName: 'Edit', actionCb: (data) => {
-                        document.dispatchEvent(new CustomEvent('editProductView', {detail: data}));
+                        routeTo('product-edit', data);
                     },
                     buttonType: 1
                 },
                 { actionName: 'Delete', actionCb: (data) => {
                         this.productService.delete(data);
-                        document.dispatchEvent(new Event('shopView'));
+                        routeTo('product-list');
                     },
                     buttonType: 5
                 },

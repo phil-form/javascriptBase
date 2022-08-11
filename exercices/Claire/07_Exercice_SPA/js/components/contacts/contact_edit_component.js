@@ -1,3 +1,4 @@
+import { routeTo } from "../../app.js";
 import { Component } from "../generics/base_component.js";
 
 
@@ -18,24 +19,24 @@ export class ContactEditComponent extends Component {
 
         // load contact data if exists
         if(this.contact) {
-            inputId.value = this.contact.id
-            inputFirstname.value = this.contact.firstname
-            inputLastname.value = this.contact.lastname
-            inputEmail.value = this.contact.email
+            inputId.value = this.contact.id;
+            inputFirstname.value = this.contact.firstname;
+            inputLastname.value = this.contact.lastname;
+            inputEmail.value = this.contact.email;
         }
 
         const saveBtn = this.root.getElementById('btn-contact-edit-save');
         saveBtn.addEventListener('click', (e) => {
-            e.preventDefault()
+            e.preventDefault();
             const contact = this.contactService.addOrUpdate(parseInt(inputId.value), inputFirstname.value, 
-                inputLastname.value, inputEmail.value)
-            document.dispatchEvent(new CustomEvent('infoContactView', {detail: contact}))
+                inputLastname.value, inputEmail.value);
+            routeTo('contact-info', contact);
         });
 
-        const cancelBtn = this.root.getElementById('btn-contact-edit-cancel')
+        const cancelBtn = this.root.getElementById('btn-contact-edit-cancel');
         cancelBtn.addEventListener('click', (e) => {
-            e.preventDefault()
-            document.dispatchEvent(new CustomEvent('listContactView'))
+            e.preventDefault();
+            routeTo('contact-list');
         })
     }
 

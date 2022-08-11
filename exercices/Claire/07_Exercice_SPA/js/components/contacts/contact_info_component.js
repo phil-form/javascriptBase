@@ -1,3 +1,4 @@
+import { routeTo } from "../../app.js";
 import { Component } from "../generics/base_component.js";
 
 
@@ -18,14 +19,14 @@ export class ContactInfoComponent extends Component {
         const editBtn = this.root.getElementById('btn-contact-info-edit');
         editBtn.addEventListener('click', (e) => {
             e.preventDefault();
-            document.dispatchEvent(new CustomEvent('editContactView', {detail: this.contact}));
+            routeTo('contact-edit', this.contact);
         });
 
         const deleteBtn = this.root.getElementById('btn-contact-info-delete');
         deleteBtn.addEventListener('click', (e) => {
             e.preventDefault();
             this.contactService.delete(this.contact);
-            document.dispatchEvent(new CustomEvent('listContactView'));
+            routeTo('contact-list');
         });
     }    
 

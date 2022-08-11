@@ -1,4 +1,5 @@
 
+import { routeTo } from "../../app.js";
 import { Component } from "../generics/base_component.js";
 
 
@@ -13,27 +14,27 @@ export class ProductInfoComponent extends Component {
     }
 
     #bind() {
-        this.root.getElementById('info-product-name').innerText = this.product.name
-        this.root.getElementById('info-product-price').innerText = this.product.price
+        this.root.getElementById('info-product-name').innerText = this.product.name;
+        this.root.getElementById('info-product-price').innerText = this.product.price;
     
         const addBtn = this.root.getElementById('btn-product-info-add-basket');
         addBtn.addEventListener('click', (e) => {
             e.preventDefault();
             this.basketService.add(this.product, 1);
-            document.dispatchEvent(new Event('basketView'));
+            routeTo('basket');
         });
         
         const editBtn = this.root.getElementById('btn-product-info-edit');
         editBtn.addEventListener('click', (e) => {
             e.preventDefault();
-            document.dispatchEvent(new CustomEvent('editProductView', {detail: this.product}));
+            routeTo('product-edit', this.product);
         });
 
         const deleteBtn = this.root.getElementById('btn-product-info-delete');
         deleteBtn.addEventListener('click', (e) => {
             e.preventDefault();
             this.productService.delete(this.product);
-            document.dispatchEvent(new CustomEvent('shopView'));
+            routeTo('product-list');
         });
     }
 

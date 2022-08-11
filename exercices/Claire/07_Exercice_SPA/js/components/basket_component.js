@@ -1,3 +1,4 @@
+import { routeTo } from "../app.js";
 import { Component } from "./generics/base_component.js";
 import { TableComponent } from './generics/table.js'
 
@@ -23,22 +24,22 @@ export class BasketComponent extends Component {
             actions: [
                 { actionName: 'Update quantity', actionCb: (data) =>
                     {
-                        this.basketService.add(data.product, parseInt(data.form.get('quantity')), true)
-                        document.dispatchEvent(new Event('basketView'))
+                        this.basketService.add(data.product, parseInt(data.form.get('quantity')), true);
+                        routeTo('basket');
                     },
                     hasForm: true,
                     buttonType: 3,
                 },
                 { actionName: 'Info', actionCb: (data) =>
                     {
-                        document.dispatchEvent(new CustomEvent('infoProductView', {detail: data.product}))
+                        routeTo('product-info', data.product);
                     },
                     buttonType: 4
                 },
                 { actionName: 'Delete', actionCb: (data) =>
                     {
-                        this.basketService.delete(data.product)
-                        document.dispatchEvent(new Event('basketView'))
+                        this.basketService.delete(data.product);
+                        routeTo('basket');
                     },
                     buttonType: 5
                 },
@@ -54,10 +55,10 @@ export class BasketComponent extends Component {
     
         const table = new TableComponent(tableConfig);
         const itemTable = this.root.getElementById('table-basket');
-        itemTable.innerHTML = ''
+        itemTable.innerHTML = '';
         itemTable.appendChild(table.html);
     
-        this.root.getElementById('total-basket').innerText = this.basketService.total()
+        this.root.getElementById('total-basket').innerText = this.basketService.total();
     }
 
 }

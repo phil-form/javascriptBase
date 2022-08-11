@@ -1,5 +1,6 @@
 import { TableComponent } from '../generics/table.js'
 import { Component } from '../generics/base_component.js';
+import { routeTo } from '../../app.js';
 
 export class ContactListComponent extends Component {
 
@@ -13,7 +14,7 @@ export class ContactListComponent extends Component {
         const newBtn = this.root.querySelector('#btn-contact-list-new');
         newBtn.addEventListener('click', (e) => {
             e.preventDefault();
-            document.dispatchEvent(new CustomEvent('editContactView'));
+            routeTo('contact-edit');
         })
 
         const data = this.contactService.contacts;
@@ -28,18 +29,18 @@ export class ContactListComponent extends Component {
             ],
             actions: [
                 { actionName: 'Info', actionCb: (data) => {
-                        document.dispatchEvent(new CustomEvent('infoContactView', {detail: data}));
+                        routeTo('contact-info', data);
                     },
                     buttonType: 4
                 },
                 { actionName: 'Edit', actionCb: (data) => {
-                        document.dispatchEvent(new CustomEvent('editContactView', {detail: data}));
+                    routeTo('contact-edit', data);
                     },
                     buttonType: 1
                 },
                 { actionName: 'Delete', actionCb: (data) => {
                         this.contactService.delete(data);
-                        document.dispatchEvent(new Event('listContactView'));
+                        routeTo('contact-list');
                     },
                     buttonType: 5
                 },

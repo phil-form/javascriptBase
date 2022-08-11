@@ -1,3 +1,4 @@
+import { routeTo } from "../../app.js";
 import { Component } from "../generics/base_component.js";
 
 
@@ -25,13 +26,13 @@ export class ProductEditComponent extends Component {
             const name = inputName.value;
             const price = inputPrice.value;
             const product = this.productService.addOrUpdate(name, price);
-            document.dispatchEvent(new CustomEvent('infoProductView', {detail: product}));
+            routeTo('product-info', product);
         })
         
         const btnCancel = this.root.getElementById('btn-product-edit-cancel');
         btnCancel.addEventListener('click', (e) => {
             e.preventDefault();
-            document.dispatchEvent(new CustomEvent('shopView'));
+            routeTo('product-list');
         })
 
     }
