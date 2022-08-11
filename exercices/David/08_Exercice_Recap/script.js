@@ -57,11 +57,12 @@ class Shop {
         save();
     }
 
-    buy_item(item) {
-        // console.log(`shop ${this.items[item]}`);
-        // console.log(basket.items[item]);
-        basket.add_item(this.items[item]);
-        //console.log(basket.items[item]);
+    buy_item(item_id, qty) {
+        const item     = this.items[item_id];
+        const new_item = new Item(item.name, item.price);
+        new_item.qty = qty;
+        item.stock -= parseInt(qty);
+        basket.add_item(new_item);
     }
 
     get(key) {
@@ -94,38 +95,19 @@ class Basket {
     }
 
     add_item(item) {
-        const update = this.get(item.id);
-        if (update) {
-            if (this.items[update].qty)
-                this.items[update].qty += parseInt(item.qty);
-            else
-                this.items[update].qty = parseInt(item.qty);
-        }
-        else {
+        const index = Object.keys(this.items).indexOf(item.id);
+        if (index === -1)
             this.items[item.id] = item;
-            this.items[item.id].qty = parseInt(item.qty);
-        }
+        else
+            this.items[item.id].qty += parseInt(item.qty);
         save();
-    }
-
-    get(key) {
-        console.log('start');
-        console.log(this.items);
-        for (let search in this.items) {
-            console.log('ok');
-            console.log(search);
-            // if (search === key)
-            //     return search
-        }
-        console.log('wtf');
-        return null;
     }
 
     compute_total() {
         let total = 0;
-        for (let item in this.items) {
-
-        }
+        for (let item in this.items)
+            total += (this.items[item].qty * this.items[item].price);
+        return total;
     }
 }
 
@@ -512,6 +494,36 @@ function basket_page() {
     current_page = "basket_page";
     nav_bar();
     clear_root();
+
+    const basket_table_config = {
+        thead: ["id", "name", "price", "quantity"],
+        tbody: [],
+    }
+    for (const elem in basket.items) {
+        const item = basket.items[elem];
+        basket_table_config.tbody.push(
+            [item.id, item.name, item.price, item.qty]
+        );
+    }
+    const table = create_table(basket_table_config);
+    root.appendChild(table);
+
+    const tfoot = document.createElement('tfoot');
+    const total = basket.compute_total();
+    const total_elem_tr = document.createElement('tr');
+    total_elem_tr.className = "d-flex";
+    const total_elem_td = document.createElement('td');
+    total_elem_td.innerText = `total: ${total} $`;
+    table.appendChild(tfoot);
+    tfoot.appendChild(total_elem_tr);
+    total_elem_tr.appendChild(total_elem_td );
+
+    const checkout = document.createElement('button');
+    checkout.className = "btn btn-primary";
+    checkout.innerText = "checkout";
+    checkout.disabled = true;
+    root.appendChild(checkout);
+
 };
 
 function shop_page() {
@@ -521,10 +533,10 @@ function shop_page() {
     nav_bar();
     clear_root();
 
-    const add_item_form = document.createElement('form');
-    root.appendChild(add_item_form);
+    const shop_add_item_form = document.createElement('form');
+    root.appendChild(shop_add_item_form);
 
-    add_item_form.innerHTML = `
+    shop_add_item_form.innerHTML = `
         <div class="col w-25>
             <label for="item_name" class="form-label">Name</label><br>
             <input type="text" class="form-control w-25" name="item_name" id="item_name">
@@ -538,10 +550,10 @@ function shop_page() {
             <input type="number" class="form-control w-25 mb-3" name="item_quantity" id="item_quantity">
         </div>
     `;
-    const add_item_button = document.createElement('button');
-    add_item_button.innerText = "Add item to shop";
-    add_item_button.className = "btn btn-success mb-3 ml-3";
-    add_item_button.addEventListener('click', (e) => {
+    const shop_add_item_button = document.createElement('button');
+    shop_add_item_button.innerText = "Add item to shop";
+    shop_add_item_button.className = "btn btn-success mb-3 ml-3";
+    shop_add_item_button.addEventListener('click', (e) => {
         e.preventDefault();
         const new_item = new Item(
             document.getElementById('item_name').value,
@@ -552,7 +564,7 @@ function shop_page() {
         current_page = "shop_add";
         shop_page();
     })
-    add_item_form.appendChild(add_item_button);
+    shop_add_item_form.appendChild(shop_add_item_button);
 
     const shop_table = document.createElement('table');
     shop_table.className = "table table-hover";
@@ -562,13 +574,11 @@ function shop_page() {
     shop_table.innerHTML = `
         <thead style="border: none">
             <tr class="d-flex">
-                <div class="d-flex justify-content-center">
-                    <th scope="col" class="col-1">Id</th>
-                    <th scope="col" class="col-1">Name</th>
-                    <th scope="col" class="col-1">Price</th>
-                    <th scope="col" class="col-1">Stock</th>
-                    <th scope="col" class="col-1"></th>
-                </div>
+                <th scope="col" class="col-1">Id</th>
+                <th scope="col" class="col-1">Name</th>
+                <th scope="col" class="col-1">Price</th>
+                <th scope="col" class="col-1">Stock</th>
+                <th scope="col" class="col-1"></th>
             </tr>
         </thead>
     `;
@@ -578,25 +588,64 @@ function shop_page() {
     shop_table.appendChild(tbody);
 
     for (const key in shop.items) {
-        const elem = shop.items[key]
-        tbody.innerHTML += `
-            <tr class="d-flex" id="shop_items_row_${key}">
-                <th scope="col" class="col-1">${elem.id}</th>
-                <td scope="col" class="col-1">${elem.name}</td>
-                <td scope="col" class="col-1">${elem.price}</td>
-                <td scope="col" class="col-1" id="shop_buy_stock_${key}">${elem.stock}</td>
-                <td>
-                    <form class="btn-group">
-                        <input type="number" value="1" id="shop_buy_qty_${key}">
-                        <input type="submit" value="Buy" class="btn btn-primary" id="shop_buy_btn_${key}">
-                        </form>
-                    <input type="submit" value="X" class="btn" style="font-weight: bold; color: red;" id="shop_delete_item_${key}">
-                </td>
-            </tr>
-        `
+        const elem = shop.items[key];
 
-        const shop_delete_button = document.getElementById(`shop_delete_item_${key}`);
-        shop_delete_button.addEventListener('click', (e) => {
+        const tr = document.createElement('tr');
+        tr.className = 'd-flex';
+        tbody.appendChild(tr);
+
+        const id = document.createElement('th');
+        id.scope = 'col';
+        id.className = "col-1";
+        id.innerText = elem.id;
+        tr.appendChild(id);
+
+        const name     = document.createElement('td');
+        name.scope     = 'col';
+        name.className = "col-1";
+        name.innerText = elem.name;
+        tr.appendChild(name);
+
+        const price     = document.createElement('td');
+        price.scope     = 'col';
+        price.className = "col-1";
+        price.innerText = elem.price;
+        tr.appendChild(price);
+
+        const stock     = document.createElement('td');
+        stock.scope     = 'col';
+        stock.className = "col-1";
+        stock.innerText = elem.stock;
+        tr.appendChild(stock);
+
+        const td = document.createElement('td');
+        stock.scope     = 'col';
+        stock.className = "col-1";
+        tr.appendChild(td);
+
+        const shop_buy_item_form = document.createElement('form');
+        shop_buy_item_form.className = "btn-group";
+        td.appendChild(shop_buy_item_form);
+
+        const shop_buy_item_qty = document.createElement('input');
+        shop_buy_item_qty.type  = 'number';
+        shop_buy_item_qty.value = '1';
+        shop_buy_item_form.appendChild(shop_buy_item_qty);
+
+        const shop_buy_item_btn =  document.createElement('input');
+        shop_buy_item_btn.type  = 'submit';
+        shop_buy_item_btn.value = 'Buy';
+        shop_buy_item_btn.className = 'btn btn-primary';
+        shop_buy_item_form.appendChild(shop_buy_item_btn);
+
+        const shop_delete_item_btn = document.createElement('input');
+        shop_delete_item_btn.type  = 'submit';
+        shop_delete_item_btn.value = 'X';
+        shop_delete_item_btn.className = 'btn';
+        shop_delete_item_btn.style = 'font-weight: bold; color: red;';
+        td.appendChild(shop_delete_item_btn);
+
+        shop_delete_item_btn.addEventListener('click', (e) => {
             e.preventDefault();
             delete shop.items[key];
             save();
@@ -604,17 +653,14 @@ function shop_page() {
             shop_page();
         });
 
-        const shop_buy_btn = document.getElementById(`shop_buy_btn_${key}`);
-        shop_buy_btn.addEventListener('click', (e) => {
+        shop_buy_item_btn.addEventListener('click', (e) => {
             e.preventDefault();
-            const qty = parseInt(document.getElementById(`shop_buy_qty_${key}`).value);
-            const stock = parseInt(document.getElementById(`shop_buy_stock_${key}`).innerText);
-            if (qty <= stock) {
-                shop.buy_item(key);
-            } else {
-                current_page = "reload";
-                shop_page();
-            }
+            const qty = parseInt(shop_buy_item_qty.value);
+            const stock = parseInt(elem.stock);
+            if (qty <= stock)
+                shop.buy_item(key, qty);
+            current_page = "reload";
+            shop_page();
         })
     }
 }
@@ -627,6 +673,7 @@ function clear_root() {
 function save() {
     sessionStorage.setItem('users', JSON.stringify(users));
     sessionStorage.setItem('shop', JSON.stringify(shop.items));
+    sessionStorage.setItem('basket', JSON.stringify(basket.items));
 }
 
 const users  = sessionStorage.getItem('users') ? JSON.parse(sessionStorage.getItem('users')) : [];
@@ -636,8 +683,6 @@ const root   = document.getElementById("root");
 const nav    = document.getElementById("nav_bar");
 
 let current_page = "";
-
-
 
 function create_table(tableConfig) {
     const table = document.createElement('table');
@@ -651,7 +696,7 @@ function create_table(tableConfig) {
     for (let columnName in tableConfig.thead) {
         const th = document.createElement('th');
         th.scope = "col";
-        th.className = tableConfig.thead[columnName] !== "id" ? "col-1" : "";
+        th.className = "col-1";
         th.innerText = tableConfig.thead[columnName];
         thead_tr.appendChild(th);
     }
@@ -659,11 +704,17 @@ function create_table(tableConfig) {
     for (let row in tableConfig.tbody) {
         const tr = tbody.insertRow();
         tr.className = "d-flex";
-        for (let item in tableConfig.tbody[row]) {
-            const data = tr.insertCell();
-            data.scope = "row";
+        let col_counter = 0;
 
-            data.className = item !== "id" ? "col-1" : "";
+        for (let item in tableConfig.tbody[row]) {
+            if (col_counter++ === 0) {
+                data = document.createElement('th');
+                tr.appendChild(data);
+            } else
+                data = tr.insertCell();
+
+            data.scope = "row";
+            data.className = "col-1";
             data.innerText = tableConfig.tbody[row][item];
         }
     }
@@ -677,8 +728,10 @@ function create_table(tableConfig) {
     // const test_config = {
     //     thead: ["id", "Name", "Price", ""],
     //     tbody: [
+    //        [data1,  data2],
+    //        [data1,  data2],
     //     ]
     // }
 }
 
-shop_page();
+basket_page();
