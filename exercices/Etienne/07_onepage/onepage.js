@@ -8,25 +8,59 @@ class User {
     }
 }
 
-let sesstor = "opusers";
-let users   = [];
+class Produit {
+    constructor(desc, prix) {
+        this.desc = desc;
+        this.prix = prix;
+    }
+}
 
+class Panier {
+    constructor(prod, prix, qte) {
+        this.prod = prod; // = desc from Produit
+        this.prix = prix; // unit price
+        this.qte  = qte ;
+    } 
+}
+
+// for sessionStorage
+let storUsr = "opusers";
+let storPrd = "opprods";
+let storBsk = "opbasket";
+
+// global data
+let users = [];
+let prods = {};
+let bask  = {};
+
+// start
 navMenu();
+loadData();
 home();
 
-// called once
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+// start functions /////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
+// called only once ...
 function navMenu()
 {
     let nm  = document.getElementById("navmenu");
     let sp  = document.createElement ("span"   );
-    sp.appendChild(addMenu("Home"  ));
-    sp.appendChild(addMenu("Create"));
-    sp.appendChild(addMenu("List"  ));
+    sp.appendChild(addMenu("Home"         ));
+    sp.appendChild(addMenu("Create User"  ));
+    sp.appendChild(addMenu("Users List"   ));
+    sp.appendChild(addMenu("Products List"));
+    sp.appendChild(addMenu("Basket"       ));
     nm.appendChild(sp);
 
-    let bth = document.getElementById("navhome"  );
-    let btc = document.getElementById("navcreate");
-    let btl = document.getElementById("navlist"  );
+    let bth = document.getElementById("navhome"        );
+    let btc = document.getElementById("navcreateuser"  );
+    let btl = document.getElementById("navuserslist"   );
+    let btp = document.getElementById("navproductslist");
+    let btb = document.getElementById("navbasket"      );
 
     bth.addEventListener("click", e => {
         e.preventDefault();
@@ -43,28 +77,104 @@ function navMenu()
     btl.addEventListener("click", e => {
         e.preventDefault();
 
-        showList();
+        usersList();
+    })
+
+    btp.addEventListener("click", e => {
+        e.preventDefault();
+
+        productsList();
+    })
+
+    btb.addEventListener("click", e => {
+        e.preventDefault();
+
+        showBasket();
     })
 
 } // navMenu
 
+// load all data from storage
+function loadData()
+{
+    loadUsers();
+    loadProds();
+    loadBasket();
+
+} // loadData
+
+// load users from storage, or reste users array
+function loadUsers()
+{
+    users = JSON.parse(sessionStorage.getItem(storUsr));
+    if (!users)
+    {
+        // not yet any user
+        users = [];
+        return;
+    }
+
+    // already some users
+    for (let usr in users)
+    {
+        users[usr] = new User(users[usr].firstname, users[usr].lastname, users[usr].email);
+    }
+
+} // loadUsers
+
+// load products from storage, or reset products array
+function loadProds()
+{
+    prods = JSON.parse(sessionStorage.getItem(storPrd));
+    if (!prods)
+    {
+        // not yet any product
+        prods = {};
+        return;
+    }
+
+    // already some products
+    for (let prd in prods)
+    {
+        prods[prd] = new Produit(prods[prd].desc, prods[prd].prix);
+    }
+
+} // loadProds
+
+// load basket from storage, or reset basket array
+function loadBasket()
+{
+    bask = JSON.parse(sessionStorage.getItem(storBsk));
+    if (!bask)
+    {
+        // not yet any item in basket
+        bask = {};
+        return;
+    }
+
+    // already some items in basket
+    for (let bsk in bask)
+    {
+        bask[bsk] = new Panier(bask[bsk].prod, bask[bsk].prix, bask[bsk].qte);
+    }
+
+} // loadBasket
+
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+// main functions, from menu ///////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
+// show list of users if any, or ask to create first one
 function home()
 {
-    // load data from storage
-    users = JSON.parse(sessionStorage.getItem(sesstor));
-    if (users)
+    if (users.length)
     {
-        // already some data: list
-        for (let usr in users)
-        {
-            users[usr] = new User(users[usr].firstname, users[usr].lastname, users[usr].email);
-        }
-        showList();
+        usersList();
     }
     else
     {
-        // not yet any data: create
-        users = [];
         addEditUser(-1);
     }
 
@@ -75,12 +185,7 @@ function home()
 //        >= 0: edit existing one, idx is the index in array users: [0 - (n-1)]
 function addEditUser(idx)
 {
-    clr();
-
-    // title
-    let t = document.createElement("h1");
-    t.innerText = (idx == -1) ? "Create user" : "Update user";
-    opbody.appendChild(t);
+    clr((idx == -1) ? "Create user" : "Update user");
 
     let frnew = document.createElement("form");
     let tb    = document.createElement("table");
@@ -94,13 +199,7 @@ function addEditUser(idx)
     let rbtn = document.createElement("tr");
     let cbtn = document.createElement("td");
     cbtn.colSpan = 2;
-    let ibtn = document.createElement("input");
-    ibtn.type      = "submit";
-    ibtn.name      = "newusr";
-    ibtn.id        = "newusr";
-    ibtn.value     = (idx == -1) ? "Create" : "Update";
-    ibtn.className = "btn btn-warning";
-
+    let ibtn = addButton((idx == -1) ? "Create" : "Update", "newusr", -1, "btn btn-warning");
     cbtn.appendChild(ibtn);
     rbtn.appendChild(cbtn);
     tb.appendChild(rbtn);
@@ -117,15 +216,24 @@ function addEditUser(idx)
         ln.value = usr.lastname;
         let em   = document.getElementById("email");
         em.value = usr.email;
-    }
+
+    } // if (idx > -1)
 
     ibtn.addEventListener("click", e => {
         e.preventDefault();
 
+        // get values from screen
         let fnm = document.getElementById("frstnm").value;
         let lnm = document.getElementById("lastnm").value;
         let eml = document.getElementById("email" ).value;
     
+        // check
+        if (fnm.trim() == "") return;
+        if (lnm.trim() == "") return;
+        if (eml.trim() == "") return;
+        if (eml.match("[A-Za-z]+[A-Za-z0-9_\-]*@[A-Za-z0-9]+\.[a-z]{2,3}") === null) return;
+
+        // va bene !
         if (idx == -1)
         {
             // create
@@ -140,39 +248,27 @@ function addEditUser(idx)
             usr.lastname  = lnm;
             usr.email     = eml;
         }
-        sessionStorage.setItem(sesstor, JSON.stringify(users));
-        showList();
+        // save data
+        sessionStorage.setItem(storUsr, JSON.stringify(users));
+        // display all users
+        usersList();
 
     }) // ibtn.addEventListener("click", e
 
 } // addEditUser
 
-function showList()
+// display list of users in a array:
+//   for each user buttons for info, edit, remove
+//   below  button to add
+function usersList()
 {
-    clr();
-
-    // title
-    let t = document.createElement("h1");
-    t.innerText = "Users list";
-    opbody.appendChild(t);
+    clr("Users list");
 
     // table
     let tbl = document.createElement("table");
     tbl.className = "table";
     tbl.id        = "tblusers"
-
-    // header
-    let tbh    = document.createElement("thead");
-    let trh    = document.createElement("tr");
-    let titles = ["#", "Firstname", "Lastname", "Email", "Actions"]
-    for (let tit in titles)
-    {
-        let th = document.createElement("th");
-        th.innerText = titles[tit];
-        trh.appendChild(th);
-    }
-    tbh.appendChild(trh);
-    tbl.appendChild(tbh);
+    tbl.appendChild(tbHeader(["#", "Firstname", "Lastname", "Email", "Actions"]));
 
     // body
     let tbb = document.createElement("tbody");
@@ -184,25 +280,23 @@ function showList()
         let tr = document.createElement("tr");
         tr.id = idx.toString();
     
-        // fields, cols 1 to 4
+        // cols 1 to 4: fields
         tr.appendChild(addCell(idx.toString()      ));
         tr.appendChild(addCell(users[usr].firstname));
         tr.appendChild(addCell(users[usr].lastname ));
         tr.appendChild(addCell(users[usr].email    ));
 
-        // buttons, col 5
+        // col 5: buttons
         let td5 = document.createElement("td");
-        let act = document.createElement("form");
 
         let btinfo = addButton("Info"  , "info", idx, "btn btn-info");
         let btedit = addButton("Edit"  , "edit", idx, "btn btn-warning");
         let btdel  = addButton("Remove", "rem" , idx, "btn btn-danger");
 
-        act.appendChild(btinfo);
-        act.appendChild(btedit);
-        act.appendChild(btdel );
+        td5.appendChild(btinfo);
+        td5.appendChild(btedit);
+        td5.appendChild(btdel );
 
-        td5.appendChild(act);
         tr.appendChild(td5);
 
         // add row to body
@@ -245,11 +339,8 @@ function showList()
 
     // col 5: button
     let tfd5 = document.createElement("th");
-    let frad = document.createElement("form");
     let btad = addButton("Add", "add", 0, "btn btn-primary");
-
-    frad.appendChild(btad);
-    tfd5.appendChild(frad);
+    tfd5.appendChild(btad);
 
     // cell to row, row to footer, footer to table
     tfr.appendChild(tfd5);
@@ -265,13 +356,13 @@ function showList()
         addEditUser(-1);
     })
 
-} // showList
+} // usersList
 
 function show1user(idx)
 // idx is the row number from list on page: [1 - n] 
 // the index in users is [0 - (n-1)]
 {
-    clr();
+    clr("This User");
 
     let usr = users[idx - 1];
     let h3 = document.createElement("h3");
@@ -279,6 +370,250 @@ function show1user(idx)
     opbody.appendChild(h3);
 
 } // show1user
+
+function productsList()
+{
+    clr("Products List");
+
+    // table and its header
+    let tbprd       = document.createElement("table");
+    opbody.appendChild(tbprd);
+    tbprd.className = "table";
+    tbprd.appendChild(tbHeader(["", "Description", "Price", "Quantity"]));
+
+    // table body
+    let tbbprd = document.createElement("tbody");
+    tbprd.appendChild(tbbprd);
+
+    let idx = 0;
+    for (let prd in prods)
+    {
+        idx += 1;
+        let tr = document.createElement("tr");
+
+        // col 0: button to remove product
+        let td0   = document.createElement("td");
+        td0.appendChild(addButton("Delete", "prem", idx, "btn btn-danger"));
+        tr.appendChild(td0);
+
+        // col 1-2: description & price
+        tr.appendChild(addCell(prods[prd].desc));
+        tr.appendChild(addCell(prods[prd].prix));
+
+        // col 3: qty & add button
+        let td3  = document.createElement("td");
+        let iqty = addInput("number", "pqty_", idx);
+        td3.appendChild(iqty);
+        td3.appendChild(addButton("Add", "padd", idx, "btn btn-primary"));
+        tr.appendChild(td3);
+
+        // add row to table body
+        tbbprd.appendChild(tr);
+
+        // button remove product from products array
+        let btprem = document.getElementById(`btnprem${idx}`);
+        btprem.addEventListener("click", e => {
+            e.preventDefault();
+
+            // delete product: also delete from basket, if any
+            delete bask [prods[prd].desc];
+            delete prods[prods[prd].desc];
+            // both modified, both saved
+            sessionStorage.setItem(storPrd, JSON.stringify(prods));
+            sessionStorage.setItem(storBsk, JSON.stringify(bask ));
+            // refresh page
+            productsList();
+
+        }) // btprem.addEventListener("click",
+    
+        // button add qty of product to basket
+        let btpadd = document.getElementById(`btnpadd${idx}`);
+        btpadd.addEventListener("click", e => {
+            e.preventDefault();
+
+            // check
+            if (iqty.value.trim()    ==  "" ) return;
+            if (parseInt(iqty.value) === NaN) return;
+            if (parseInt(iqty.value) <=   0 ) return;
+
+            // get product and qty
+            let pr  = prods[prd];
+            let qty = parseInt(iqty.value);
+            iqty.value = "";    // reset qty on screen for next use
+            // already in basket ?
+            if (!bask[pr.desc])
+            {
+                // create empty
+                bask[pr.desc] = new Panier(pr.desc, 0, 0)
+            }
+            // update
+            bask[pr.desc].qte  +=    qty ;
+            bask[pr.desc].prix  = pr.prix;
+            // no more ? (means qty < 0)
+            if (bask[pr.desc].qte <= 0)
+            {
+                // remove
+                delete bask[pr.desc];
+            }
+            // update basket
+            sessionStorage.setItem(storBsk, JSON.stringify(bask));
+            // refresh page
+            productsList();
+
+        }) // btpadd.addEventListener("click",
+    
+    } // for (prd in prods)
+
+    // footer: to create new product
+    let tbfprd = document.createElement("tfoot");
+    let tfr    = document.createElement("tr");
+
+    // col 0: button create product
+    let tf0 = document.createElement("td");
+    tf0.appendChild(addButton("New Product", "nprod", -1, "btn btn-primary"));
+    tfr.appendChild(tf0);
+
+    // col 1 & 2: desc & price, hidden !
+    let tf1 = document.createElement("td");
+    tf1.appendChild(addInput("text", "prddesc", -1, "hidden"));
+    tfr.appendChild(tf1);
+
+    let tf2 = document.createElement("td");
+    tf2.appendChild(addInput("number", "prdprix", -1, "hidden"));
+    tfr.appendChild(tf2);
+
+    // col 3: button submit, hidden !
+    let tf3 = document.createElement("td");
+    tf3.appendChild(addButton("Create", "cprod", -1, "btn btn-primary", "hidden"));
+    tfr.appendChild(tf3);
+
+    tbfprd.appendChild(tfr);
+    tbprd.appendChild(tbfprd);
+
+    // button new product (left): show fields to fill them
+    let btnnprod = document.getElementById("btnnprod");
+    btnnprod.addEventListener("click", e => {
+        e.preventDefault();
+
+        // show fields & button
+        let inpdesc  = document.getElementById("prddesc" );
+        let inpprix  = document.getElementById("prdprix" );
+        let btncprod = document.getElementById("btncprod");
+        inpdesc.removeAttribute ("hidden");
+        inpdesc.setAttribute    ("enabled", "");
+        inpprix.removeAttribute ("hidden");
+        inpprix.setAttribute    ("enabled", "");
+        btncprod.removeAttribute("hidden");
+        btncprod.setAttribute   ("enabled", "");
+
+    }) // btnnprod.addEventListener("click",
+
+    // button create product (right): fields filled, create
+    let btncprod = document.getElementById("btncprod");
+    btncprod.addEventListener("click", e => {
+        e.preventDefault();
+
+        // get values
+        let inpdesc = document.getElementById("prddesc");
+        let inpprix = document.getElementById("prdprix");
+        // check
+        if (inpdesc.value.trim()    ==  "" ) return;
+        if (inpprix.value.trim()    ==  "" ) return;
+        if (parseInt(inpprix.value) === NaN) return;
+        if (parseInt(inpprix.value) <=   0 ) return;
+        // create product
+        let prd = new Produit(inpdesc.value, parseInt(inpprix.value));
+        // add to array and storage
+        prods[prd.desc] = prd;
+        sessionStorage.setItem(storPrd, JSON.stringify(prods));
+        // refresh page
+        productsList();
+
+    }) // btncprod.addEventListener("click",
+
+} // productsList
+
+function showBasket()
+{
+    clr("Basket");
+
+    // table & header
+    let tbask = document.createElement("table");
+    tbask.className = "table";
+    opbody.appendChild(tbask);
+    tbask.appendChild(tbHeader(["Product", "Qantity", "Unit Price", "Remove"]));
+
+    // body
+    let tbbask = document.createElement("tbody");
+    tbask.appendChild(tbbask);
+
+    let idx = 0;
+    let tot = 0;
+    for (let item in bask)
+    {
+        idx += 1;
+        let tr = document.createElement("tr");
+        tbbask.appendChild(tr);
+
+        // col 1-3: data from bask
+        tr.appendChild(addCell(bask[item].prod));
+        tr.appendChild(addCell(bask[item].qte));
+        tr.appendChild(addCell(bask[item].prix));
+
+        // col 4: qty to remove & button
+        let td4 = document.createElement("td");
+        tr.appendChild(td4);
+        td4.appendChild(addInput ("number", "qtyrem", idx));
+        td4.appendChild(addButton("Remove", "rem"   , idx, "btn btn-danger"));
+
+        // compute total
+        tot += (bask[item].qte * bask[item].prix);
+
+        // button remove
+        let btnrem = document.getElementById(`btnrem${idx}`)
+        btnrem.addEventListener("click", e => {
+            e.preventDefault();
+
+            // get list row number
+            let idx = getLitsId(btnrem);
+            // get item from array
+            let itm = getBaskItmByN(idx);
+            // get qty from screen
+            let qty = document.getElementById(`qtyrem${idx}`);
+            // check
+            if (qty.value.trim()    ==  "" ) return;
+            if (parseInt(qty.value) === NaN) return;
+            if (parseInt(qty.value) <=   0 ) return;
+            // update item in array
+            itm.qte -= parseInt(qty.value);
+            // no more ? remove !
+            if (itm.qte <= 0)
+            {
+                delete bask[itm.prod];
+            }
+            // update storage
+            sessionStorage.setItem(storBsk, JSON.stringify(bask));
+            // refresh page
+            showBasket();
+
+        }) // btnrem.addEventListener("click",
+
+    } // for (let item in bask)
+
+    // footer, for total price
+    let tfbask = document.createElement("tfoot");
+    tbask.appendChild(tfbask);
+    let tr = document.createElement("tr");
+    tfbask.appendChild(tr);
+    let tf1 = document.createElement("th");
+    tr.appendChild(tf1);
+    tf1.colSpan = 2;
+    tf1.innerText = "TOTAL PRICE"
+    let tf3 = document.createElement("th");
+    tr.appendChild(tf3);
+    tf3.innerText = tot;
+
+} // showBasket
 
 function editUser(idx)
 // idx is the row number: [1 - n] 
@@ -292,24 +627,41 @@ function delUser(idx)
 // the index in users is [0 - (n-1)]
 {
     delete users[idx - 1];
-    sessionStorage.setItem(sesstor, JSON.stringify(users));
-    showList();
+    sessionStorage.setItem(storUsr, JSON.stringify(users));
+    usersList();
 }
 
-// clear all
-function clr()
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+// utilities ///////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
+// clear all, then set title
+//   tt: not empty: title
+//       empty    : no title to display
+function clr(tt)
 {
+    // clear body
     while (opbody.firstChild)
     {
         opbody.removeChild(opbody.firstChild);
     }
-}
 
-// create a button with name "navtxt", where txt is the parameter in lowercases
-// the text on the button is txt, with cases as given
+    // title
+    if (tt == "") return;
+
+    let t = document.createElement("h1");
+    t.innerText = tt;
+    opbody.appendChild(t);
+
+} // clr
+
+// create a "button" with name "navtxt", where txt is the parameter in lowercases and without any spaces
+// the text on the button is txt, with cases and spaces as given
 function addMenu(txt)
 {
-    let btn = txt.toLowerCase();
+    let btn = txt.toLowerCase().replace(" ", "");
     btn = `nav${btn}`;
 
     let a    = document.createElement("a");
@@ -325,38 +677,96 @@ function addMenu(txt)
 
 } // addMenu
 
-// called to build main list (all cells, but cell 5 with buttons)
+// create and return table header
+//   titles: array of columns title
+function tbHeader(titles)
+{
+    // header
+    let tbh = document.createElement("thead");
+    let trh = document.createElement("tr");
+    for (let tit in titles)
+    {
+        let th = document.createElement("th");
+        th.innerText = titles[tit];
+        trh.appendChild(th);
+    }
+    tbh.appendChild(trh);
+
+    return tbh;
+
+} // tbHeader
+
+// create and return an array cell with data
 function addCell(val)
 {
     let td = document.createElement("td");
     td.innerText = val;
 
     return td;
-}
 
-// called to build main list (all buttons, included "add")
-function addButton(lbl, id, idx, btclass = "")
+} // addCell
+
+// create and return an input field
+//   tp  : type of input
+//   id  : name and id of input
+//   idx : row number (will be used to addEventListener)
+//   attr: other attribute, without value, like "hidden", "disabled", default no attribute
+function addInput(tp, id, idx = -1, attr = "")
 {
-    let btn   = document.createElement("input");
-    btn.type  = "submit";
-    btn.id    = `btn${id}${idx}`;
-    btn.value = lbl;
-    if (btclass != "")
+    let inp = document.createElement("input");
+    inp.type = tp;
+    inp.name = id;
+    inp.id   = id;
+    if (idx > -1)
     {
-        btn.className = btclass;
+        inp.id = `${inp.id}${idx}`;
+    }
+    if (attr != "")
+    {
+        inp.setAttribute(attr, "");
+    }
+    
+    return inp;
+
+} // addInput
+
+// create and return "button", with button id composed of: but id idx (without any spaces betwwen parts)
+//   lbl : button text
+//   id  : HTML id (will be used to addEventListener)
+//   idx : row number (will be used to addEventListener)
+//   cls : class, default no class
+//   attr: other attribute, without value, like "hidden", "disabled", default no attribute
+function addButton(lbl, id, idx, cls = "", attr = "")
+{
+    let btn       = document.createElement("a");
+    btn.type      = "submit";
+    btn.innerText = lbl;
+    btn.id        = `btn${id}`;
+    if (idx > -1)
+    {
+        btn.id = `${btn.id}${idx}`;
+    }
+    if (cls != "")
+    {
+        btn.className = cls;
+    }
+    if (attr != "")
+    {
+        btn.setAttribute(attr, "");
     }
 
     return btn;
-}
+
+} // addButton
 
 // create and return a table row with a label and an input
-// called for create / update form
-//   id   : id of input
-//   label: shown in label and placeholder
+//   id   : HTML id of input
+//   label: shown in label
 function addTrLblInput(id, label)
 {
     let tr = document.createElement("tr");
 
+    // label
     let td1 = document.createElement("td");
     let lbl = document.createElement("label");
     lbl.for       = id;
@@ -364,6 +774,7 @@ function addTrLblInput(id, label)
     td1.appendChild(lbl);
     tr.appendChild(td1);
 
+    // input
     let td2 = document.createElement("td");
     let inp = document.createElement("input");
     inp.type        = "text";
@@ -377,7 +788,7 @@ function addTrLblInput(id, label)
 } // addTrLblInput
 
 // get row id from button name
-//   btn: button name
+//   btn: button name, ends with row id
 function getLitsId(btn)
 {
     let idbt = btn.id;
@@ -391,3 +802,22 @@ function getLitsId(btn)
     return parseInt(idbt);
 
 } // getLitsId
+
+// get item idx from bask, by browsing dictionary
+//   idx: number
+function getBaskItmByN(idx)
+{
+    let itm = ""
+    let i   = 0;
+    for (let it in bask)
+    {
+        i += 1;
+        if (i == idx)
+        {
+            itm = bask[it];
+        }
+    } // for (let it in bask)
+
+    return itm;
+
+} // getBaskItmByN
