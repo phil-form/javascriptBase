@@ -4,7 +4,7 @@ class User {
     constructor(first, last, email) {
         this.firstname = first;
         this.lastname  = last;
-        this.email     = email;
+        this.email     = email; // unique
     }
 }
 
@@ -16,17 +16,20 @@ class Produit {
 }
 
 class Panier {
-    constructor(prod, prix, qte) {
-        this.prod = prod; // = desc from Produit
-        this.prix = prix; // unit price
-        this.qte  = qte ;
+    constructor(email, prod, prix, qte) {
+        this.email = email; // unique
+        this.prod  = prod;  // = desc from Produit
+        this.prix  = prix;  // unit price
+        this.qte   = qte ;
     } 
 }
 
 // for sessionStorage
-let storUsr = "opusers";
-let storPrd = "opprods";
-let storBsk = "opbasket";
+let storUsr   = "opusers";
+let storPrd   = "opprods";
+let storBsk   = "opbasket";
+let storSlct  = "opselected";
+let storEmail = "opemail";
 
 // global data
 let users = [];
@@ -34,6 +37,8 @@ let prods = {};
 let bask  = {};
 
 // start
+sessionStorage.setItem(storSlct , "");
+sessionStorage.setItem(storEmail, "");
 navMenu();
 loadData();
 home();
@@ -155,7 +160,7 @@ function loadBasket()
     // already some items in basket
     for (let bsk in bask)
     {
-        bask[bsk] = new Panier(bask[bsk].prod, bask[bsk].prix, bask[bsk].qte);
+        bask[bsk] = new Panier(bask[bsk].email, bask[bsk].prod, bask[bsk].prix, bask[bsk].qte);
     }
 
 } // loadBasket
@@ -224,6 +229,13 @@ function addEditUser(idx)
     ibtn.addEventListener("click", e => {
         e.preventDefault();
 
+        // get list of existing e-mails, to check unicity of new one
+        let emls = {};
+        for (let usr in users)
+        {
+            emls[users[usr].email] = users[usr];
+        }
+
         // get values from screen
         let fnm = document.getElementById("frstnm").value;
         let lnm = document.getElementById("lastnm").value;
@@ -234,6 +246,7 @@ function addEditUser(idx)
         if (lnm.trim() == "") return;
         if (eml.trim() == "") return;
         if (eml.match("[A-Za-z]+[A-Za-z0-9_\-]*@[A-Za-z0-9]+\.[a-z]{2,3}") === null) return;
+        if (emls[eml]) return;
 
         // va bene !
         if (idx == -1)
@@ -272,13 +285,13 @@ function addEditUser(idx)
 //   below  button to add
 function usersList()
 {
-    clr("Users list");
+    clr("Users list", true);
 
     // table
     let tbl = document.createElement("table");
     tbl.className = "table";
     tbl.id        = "tblusers"
-    tbl.appendChild(tbHeader(["#", "Firstname", "Lastname", "Email", "Actions"]));
+    tbl.appendChild(tbHeader(["", "#", "Firstname", "Lastname", "Email", "Actions"]));
 
     // body
     let tbb = document.createElement("tbody");
@@ -289,6 +302,12 @@ function usersList()
         idx += 1;
         let tr = document.createElement("tr");
         tr.id = idx.toString();
+    
+        // col 0: select
+        let td0 = document.createElement("td");
+        let btselect = addButton("Select =>", "select", idx, "btn btn-success");
+        td0.appendChild(btselect);
+        tr.appendChild(td0);
     
         // cols 1 to 4: fields
         tr.appendChild(addCell(idx.toString()      ));
@@ -312,6 +331,17 @@ function usersList()
         // add row to body
         tbb.appendChild(tr);
 
+        btselect.addEventListener("click", e => {
+            e.preventDefault();
+
+            let id  = getLitsId(btinfo);
+            let usr = users[id - 1];
+            sessionStorage.setItem(storSlct , `${usr.firstname} ${usr.lastname}`);
+            sessionStorage.setItem(storEmail, usr.email);
+            // refresh
+            usersList();
+        })
+    
         btinfo.addEventListener("click", e => {
             e.preventDefault();
 
@@ -342,9 +372,9 @@ function usersList()
     let tbf = document.createElement("tfoot");
     let tfr = document.createElement("tr");
 
-    // cols 1-4: niks
+    // cols 0-4: niks
     let tfd1 = document.createElement("th");
-    tfd1.colSpan = 4;
+    tfd1.colSpan = 5;
     tfr.appendChild(tfd1);
 
     // col 5: button
@@ -383,7 +413,9 @@ function show1user(idx)
 
 function productsList()
 {
-    clr("Products List");
+    clr("Products List", true);
+
+    let slctUsr = getUserSelected();
 
     // table and its header
     let tbprd       = document.createElement("table");
@@ -414,7 +446,7 @@ function productsList()
         let td3  = document.createElement("td");
         let iqty = addInput("number", "pqty_", idx);
         td3.appendChild(iqty);
-        td3.appendChild(addButton("Add", "padd", idx, "btn btn-primary"));
+        td3.appendChild(addButton("Add", "padd", idx, "btn btn-primary", slctUsr ? "enabled" : "hidden"));
         tr.appendChild(td3);
 
         // add row to table body
@@ -454,7 +486,7 @@ function productsList()
             if (!bask[pr.desc])
             {
                 // create empty
-                bask[pr.desc] = new Panier(pr.desc, 0, 0)
+                bask[pr.desc] = new Panier(slctUsr.email, pr.desc, 0, 0)
             }
             // update
             bask[pr.desc].qte  +=    qty ;
@@ -562,7 +594,9 @@ function productsList()
 
 function showBasket()
 {
-    clr("Basket");
+    clr("Basket", true);
+
+    let slctUsr = getUserSelected();
 
     // table & header
     let tbask = document.createElement("table");
@@ -578,52 +612,57 @@ function showBasket()
     let tot = 0;
     for (let item in bask)
     {
-        idx += 1;
-        let tr = document.createElement("tr");
-        tbbask.appendChild(tr);
+        // process only basket items for selected user
+        if (bask[item].email == slctUsr.email)
+        {
+            idx += 1;
+            let tr = document.createElement("tr");
+            tbbask.appendChild(tr);
 
-        // col 1-3: data from bask
-        tr.appendChild(addCell(bask[item].prod));
-        tr.appendChild(addCell(bask[item].qte));
-        tr.appendChild(addCell(bask[item].prix));
+            // col 1-3: data from bask
+            tr.appendChild(addCell(bask[item].prod));
+            tr.appendChild(addCell(bask[item].qte));
+            tr.appendChild(addCell(bask[item].prix));
 
-        // col 4: qty to remove & button
-        let td4 = document.createElement("td");
-        tr.appendChild(td4);
-        td4.appendChild(addInput ("number", "qtyrem", idx));
-        td4.appendChild(addButton("Remove", "rem"   , idx, "btn btn-danger"));
+            // col 4: qty to remove & button
+            let td4 = document.createElement("td");
+            tr.appendChild(td4);
+            td4.appendChild(addInput ("number", "qtyrem", idx));
+            td4.appendChild(addButton("Remove", "rem"   , idx, "btn btn-danger"));
 
-        // compute total
-        tot += (bask[item].qte * bask[item].prix);
+            // compute total
+            tot += (bask[item].qte * bask[item].prix);
 
-        // button remove
-        let btnrem = document.getElementById(`btnrem${idx}`)
-        btnrem.addEventListener("click", e => {
-            e.preventDefault();
+            // button remove
+            let btnrem = document.getElementById(`btnrem${idx}`)
+            btnrem.addEventListener("click", e => {
+                e.preventDefault();
 
-            // get list row number
-            let idx = getLitsId(btnrem);
-            // get item from array
-            let itm = getBaskItmByN(idx);
-            // get qty from screen
-            let qty = document.getElementById(`qtyrem${idx}`);
-            // check
-            if (qty.value.trim()    ==  "" ) return;
-            if (parseInt(qty.value) === NaN) return;
-            if (parseInt(qty.value) <=   0 ) return;
-            // update item in array
-            itm.qte -= parseInt(qty.value);
-            // no more ? remove !
-            if (itm.qte <= 0)
-            {
-                delete bask[itm.prod];
-            }
-            // update storage
-            sessionStorage.setItem(storBsk, JSON.stringify(bask));
-            // refresh page
-            showBasket();
+                // get list row number
+                let idx = getLitsId(btnrem);
+                // get item from array
+                let itm = getBaskItmByN(idx);
+                // get qty from screen
+                let qty = document.getElementById(`qtyrem${idx}`);
+                // check
+                if (qty.value.trim()    ==  "" ) return;
+                if (parseInt(qty.value) === NaN) return;
+                if (parseInt(qty.value) <=   0 ) return;
+                // update item in array
+                itm.qte -= parseInt(qty.value);
+                // no more ? remove !
+                if (itm.qte <= 0)
+                {
+                    delete bask[itm.prod];
+                }
+                // update storage
+                sessionStorage.setItem(storBsk, JSON.stringify(bask));
+                // refresh page
+                showBasket();
 
-        }) // btnrem.addEventListener("click",
+            }) // btnrem.addEventListener("click",
+
+        } // if (bask[item].email == slctUsr.email)
 
     } // for (let item in bask)
 
@@ -665,9 +704,11 @@ function delUser(idx)
 ////////////////////////////////////////////////////////////////////////////////
 
 // clear all, then set title
-//   tt: not empty: title
-//       empty    : no title to display
-function clr(tt)
+//   tt : not empty: title
+//        empty    : no title to display
+//   usr: true : add selected user, if any
+//        false: don't 
+function clr(tt, usr = false)
 {
     // clear body
     while (opbody.firstChild)
@@ -680,6 +721,14 @@ function clr(tt)
 
     let t = document.createElement("h1");
     t.innerText = tt;
+    if (usr)
+    {
+        let user = sessionStorage.getItem(storSlct);
+        if (user != "")
+        {
+            t.innerText = `${t.innerText} (${user})`;
+        }
+    }
     opbody.appendChild(t);
 
 } // clr
@@ -848,3 +897,19 @@ function getBaskItmByN(idx)
     return itm;
 
 } // getBaskItmByN
+
+// return null if no user selected
+//        User if user selected
+function getUserSelected()
+{
+    let slct = sessionStorage.getItem(storEmail);
+    if (!slct) return null;
+
+    for (let usr in users)
+    {
+        if (users[usr].email == slct) return users[usr];
+    }
+
+    return null;
+
+} // getUserSelected
