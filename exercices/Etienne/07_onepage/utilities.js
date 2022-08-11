@@ -1,5 +1,5 @@
 import * as Us from "./user.js";
-import * as PB from "./prod-bask.js";
+import * as Bk from "./basket.js";
 
 // for sessionStorage
 export const storUsr   = "opusers";
@@ -194,12 +194,12 @@ export function getBaskItmByN(idx)
 {
     let itm = ""
     let i   = 0;
-    for (let it in PB.bask)
+    for (let it in Bk.bask)
     {
         i += 1;
         if (i == idx)
         {
-            itm = PB.bask[it];
+            itm = Bk.bask[it];
         }
     } // for (let it in bask)
 

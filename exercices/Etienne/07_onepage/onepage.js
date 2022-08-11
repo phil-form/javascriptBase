@@ -1,6 +1,8 @@
 import * as Utl from "./utilities.js";
+
 import * as Us  from "./user.js";
-import * as PB  from "./prod-bask.js";
+import * as Pr  from "./product.js";
+import * as Bk  from "./basket.js";
 
 // start
 sessionStorage.setItem(Utl.storEmail, "");
@@ -41,7 +43,7 @@ function navMenu()
     btc.addEventListener("click", e => {
         e.preventDefault();
 
-        Us.EditUser(-1);
+        Us.addEditUser(-1);
     })
 
     btl.addEventListener("click", e => {
@@ -53,13 +55,13 @@ function navMenu()
     btp.addEventListener("click", e => {
         e.preventDefault();
 
-        PB.productsList();
+        Pr.productsList();
     })
 
     btb.addEventListener("click", e => {
         e.preventDefault();
 
-        PB.showBasket();
+        Bk.showBasket();
     })
 
 } // navMenu
@@ -68,8 +70,8 @@ function navMenu()
 function loadData()
 {
     Us.loadUsers();
-    PB.loadProds();
-    PB.loadBasket();
+    Pr.loadProds();
+    Bk.loadBasket();
 
 } // loadData
 

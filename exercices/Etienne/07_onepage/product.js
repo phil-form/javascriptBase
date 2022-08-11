@@ -1,5 +1,6 @@
-import * as Utl  from "./utilities.js";
-import * as Us   from "./user.js";
+import * as Utl from "./utilities.js";
+
+import * as Bk  from "./basket.js";
 
 export class Produit {
     constructor(desc, prix) {
@@ -8,18 +9,7 @@ export class Produit {
     }
 }
 
-export class Panier {
-    constructor(email, prod, prix, qte) {
-        this.email = email; // unique
-        this.prod  = prod;  // = desc from Produit
-        this.prix  = prix;  // unit price
-        this.qte   = qte ;
-    } 
-}
-
-// global data
 export let prods = {};
-export let bask  = {};
 
 // load products from storage, or reset products array
 export function loadProds()
@@ -39,25 +29,6 @@ export function loadProds()
     }
 
 } // loadProds
-
-// load basket from storage, or reset basket array
-export function loadBasket()
-{
-    bask = JSON.parse(sessionStorage.getItem(Utl.storBsk));
-    if (!bask)
-    {
-        // not yet any item in basket
-        bask = {};
-        return;
-    }
-
-    // already some items in basket
-    for (let bsk in bask)
-    {
-        bask[bsk] = new Panier(bask[bsk].email, bask[bsk].prod, bask[bsk].prix, bask[bsk].qte);
-    }
-
-} // loadBasket
 
 export function productsList()
 {
@@ -106,11 +77,11 @@ export function productsList()
             e.preventDefault();
 
             // delete product: also delete from basket, if any
-            delete bask [prods[prd].desc];
-            delete prods[prods[prd].desc];
+            delete Bk.bask[prods[prd].desc];
+            delete prods  [prods[prd].desc];
             // both modified, both saved
-            sessionStorage.setItem(Utl.storPrd, JSON.stringify(prods));
-            sessionStorage.setItem(Utl.storBsk, JSON.stringify(bask ));
+            sessionStorage.setItem(Utl.storPrd, JSON.stringify(prods  ));
+            sessionStorage.setItem(Utl.storBsk, JSON.stringify(Bk.bask));
             // refresh page
             productsList();
 
@@ -131,22 +102,22 @@ export function productsList()
             let qty = parseInt(iqty.value);
             iqty.value = "";    // reset qty on screen for next use
             // already in basket ?
-            if (!bask[pr.desc])
+            if (!Bk.bask[pr.desc])
             {
                 // create empty
-                bask[pr.desc] = new Panier(slctUsr.email, pr.desc, 0, 0)
+                Bk.bask[pr.desc] = new Panier(slctUsr.email, pr.desc, 0, 0)
             }
             // update
-            bask[pr.desc].qte  +=    qty ;
-            bask[pr.desc].prix  = pr.prix;
+            Bk.bask[pr.desc].qte  +=    qty ;
+            Bk.bask[pr.desc].prix  = pr.prix;
             // no more ? (means qty < 0)
-            if (bask[pr.desc].qte <= 0)
+            if (Bk.bask[pr.desc].qte <= 0)
             {
                 // remove
-                delete bask[pr.desc];
+                delete Bk.bask[pr.desc];
             }
             // update basket
-            sessionStorage.setItem(Utl.storBsk, JSON.stringify(bask));
+            sessionStorage.setItem(Utl.storBsk, JSON.stringify(Bk.bask));
             // refresh page
             productsList();
 
@@ -239,92 +210,3 @@ export function productsList()
     }) // btncancel.addEventListener("click",
 
 } // productsList
-
-export function showBasket()
-{
-    let opbody = Utl.clr("Basket", true);
-
-    let slctUsr = Utl.getUserSelected();
-
-    // table & header
-    let tbask = document.createElement("table");
-    tbask.className = "table";
-    opbody.appendChild(tbask);
-    tbask.appendChild(Utl.tbHeader(["Product", "Qantity", "Unit Price", "Remove"]));
-
-    // body
-    let tbbask = document.createElement("tbody");
-    tbask.appendChild(tbbask);
-
-    let idx = 0;
-    let tot = 0;
-    for (let item in bask)
-    {
-        // process only basket items for selected user
-        if (bask[item].email == slctUsr.email)
-        {
-            idx += 1;
-            let tr = document.createElement("tr");
-            tbbask.appendChild(tr);
-
-            // col 1-3: data from bask
-            tr.appendChild(Utl.addCell(bask[item].prod));
-            tr.appendChild(Utl.addCell(bask[item].qte));
-            tr.appendChild(Utl.addCell(bask[item].prix));
-
-            // col 4: qty to remove & button
-            let td4 = document.createElement("td");
-            tr.appendChild(td4);
-            td4.appendChild(Utl.addInput ("number", "qtyrem", idx));
-            td4.appendChild(Utl.addButton("Remove", "rem"   , idx, "btn btn-danger"));
-
-            // compute total
-            tot += (bask[item].qte * bask[item].prix);
-
-            // button remove
-            let btnrem = document.getElementById(`btnrem${idx}`)
-            btnrem.addEventListener("click", e => {
-                e.preventDefault();
-
-                // get list row number
-                let idx = Utl.getLitsId(btnrem);
-                // get item from array
-                let itm = Utl.getBaskItmByN(idx);
-                // get qty from screen
-                let qty = document.getElementById(`qtyrem${idx}`);
-                // check
-                if (Utl.notCheck(qty.value.trim()    ==  "" , 'Field on the lefet must be filled'  )) return;
-                if (Utl.notCheck(parseInt(qty.value) === NaN, 'Field on the lefet must be a number')) return;
-                if (Utl.notCheck(parseInt(qty.value) <=   0 , 'Field on the lefet must be positive')) return;
-                // update item in array
-                itm.qte -= parseInt(qty.value);
-                // no more ? remove !
-                if (itm.qte <= 0)
-                {
-                    delete bask[itm.prod];
-                }
-                // update storage
-                sessionStorage.setItem(Utl.storBsk, JSON.stringify(bask));
-                // refresh page
-                showBasket();
-
-            }) // btnrem.addEventListener("click",
-
-        } // if (bask[item].email == slctUsr.email)
-
-    } // for (let item in bask)
-
-    // footer, for total price
-    let tfbask = document.createElement("tfoot");
-    tbask.appendChild(tfbask);
-    let tr = document.createElement("tr");
-    tfbask.appendChild(tr);
-    let tf1 = document.createElement("th");
-    tr.appendChild(tf1);
-    tf1.colSpan = 2;
-    tf1.innerText = "TOTAL PRICE"
-    let tf3 = document.createElement("th");
-    tr.appendChild(tf3);
-    tf3.innerText = tot;
-
-} // showBasket
