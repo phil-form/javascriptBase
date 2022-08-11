@@ -1,3 +1,6 @@
+import { users, set_current_page, save } from "./script.js";
+import { list_view } from "./views/list_view.js";
+
 export function clear_root() {
     while (root.firstChild)
     root.removeChild(root.firstChild);
@@ -7,51 +10,79 @@ export function create_table(tableConfig) {
     const table = document.createElement('table');
 
     const thead = document.createElement('thead');
-    const thead_tr = thead.insertRow();
     const tbody = document.createElement('tbody');
     const tfoot = document.createElement('tfoot');
     table.appendChild(thead);
     table.appendChild(tbody);   
     table.appendChild(tfoot);   
-
-    for (let columnName in tableConfig.thead) {
-        const th = document.createElement('th');
-        th.scope = "col";
-        th.className = "col-1";
-        th.innerText = tableConfig.thead[columnName];
-        thead_tr.appendChild(th);
+    
+    const column_count = tableConfig.thead.length;
+    
+    //set table attributes
+    for (const attr in tableConfig.attributes) {
+        table.setAttribute(attr, tableConfig.attributes[attr]);
     }
 
-    for (let row in tableConfig.tbody) {
+    //set head attributes
+    for (const attr in tableConfig.thead.head_attributes) {
+        thead.setAttribute(attr, tableConfig.thead.head_attributes[attr]);
+    }
+
+    //set row attributes
+    const thead_tr = thead.insertRow();
+    for (const attr in tableConfig.thead.row_attributes) {
+        thead_tr.setAttribute(attr, tableConfig.thead.row_attributes[attr]);
+    }
+
+    //set attributes for every column and fill data
+    for (const colummn in tableConfig.thead.data) {
+        const th = document.createElement('th');
+        for (const attr in tableConfig.thead.data[colummn].attributes) {
+            th.setAttribute(attr, tableConfig.thead.data[colummn].attributes[attr]);
+        }
+        th.innerText = tableConfig.thead.data[colummn].data;
+        thead_tr.appendChild(th);
+    };
+
+    //set body attributes
+    for (const attr in tableConfig.tbody.attributes) {
+        tbody.setAttribute(attr, tableConfig.tbody.attributes[attr]);
+    }
+
+    //for every row
+    for (const row_index in tableConfig.tbody.data) {
+        const row = tableConfig.tbody.data[row_index];
         const tr = tbody.insertRow();
-        tr.className = "d-flex";
+
+        //set row attributes
+        for (const attr in row.attributes) {
+            tr.setAttribute(attr, row.attributes[attr]);
+        }
+        //for every item in row
         let col_counter = 0;
+        for (const item_index in row.data) {
+            if (col_counter === column_count)
+                return;
+            const item = row.data[item_index];
+            const td = tr.insertCell();
 
-        for (let item in tableConfig.tbody[row]) {
-            let data;
-            if (col_counter++ === 0) {
-                data = document.createElement('th');
-                tr.appendChild(data);
-            } else
-                data = tr.insertCell();
-
-            data.scope = "row";
-            data.className = "col-1";
-            data.innerText = tableConfig.tbody[row][item];
+            //set item attributes
+            for (const attr in item.attributes) {
+                td.setAttribute(attr, item.attributes[attr])
+            }
+            //set item data
+            td.innerText = item.data;
         }
     }
-
-
-    //style
-    table.className = "table table-hover";
-    thead.style = "border: none;"
-    thead_tr.className = "d-flex";
     return table;
-    // const test_config = {
-    //     thead: ["id", "Name", "Price", ""],
-    //     tbody: [
-    //        [data1,  data2],
-    //        [data1,  data2],
-    //     ]
-    // }
 }
+
+export function my_remove(user) {
+    set_current_page("remove");
+    const index = users.indexOf(user);
+    if (index !== -1)
+        users.splice(index, 1);
+    save();
+    list_view();
+};
+
