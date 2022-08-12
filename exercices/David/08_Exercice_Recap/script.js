@@ -6,6 +6,7 @@ import {register_view} from "./views/register_view.js"
 import {basket_view}   from "./views/basket_view.js"
 import {shop_view}     from "./views/shop_view.js"
 import {NavBar}        from "./nav_bar.js";
+import { edit_page } from "./views/edit_view.js"
 
 export const users  = sessionStorage.getItem('users') ? JSON.parse(sessionStorage.getItem('users')) : [];
 export const shop   = new Shop();
@@ -23,7 +24,6 @@ export function save() {
 }
 
 const nav = document.getElementById("nav_bar");
-console.log(nav.firstChild);
 const nav_config = [
     {title: "Register", callback: register_view},
     {title: "Home",     callback: list_view},
@@ -34,4 +34,4 @@ nav.appendChild(new NavBar(nav_config));
 
 const root = document.getElementById("root");
 
-basket_view();
+register_view();

@@ -1,6 +1,6 @@
-import { clear_root} from "../utils.js"
+import { clear_root, ElemGenerator}      from "../utils.js"
 import { current_page, set_current_page } from "../script.js";
-import { shop, save } from "../script.js";
+import { shop } from "../script.js";
 import { Item } from "../classes/item.js";
 
 export function shop_view() {
@@ -42,101 +42,63 @@ export function shop_view() {
     })
     shop_add_item_form.appendChild(shop_add_item_button);
 
-    const shop_table = document.createElement('table');
-    shop_table.className = "table table-hover";
-    root.appendChild(shop_table);
+    function make_config(item) {
+        const formConfig = {
+            attributes: {class: "btn-group"},
+            data: [
+                {attributes: {type: "number", value:1, id: `shop_buy_item_${item.id}`}},
+                {attributes: {type: "submit", value: "Buy", class: "btn btn-primary"}, 
+                            callBacks: [{event: "click", params: item, callback: buy}]}
+            ]
+        };
+        return formConfig;
+    };
 
-    //header
-    shop_table.innerHTML = `
-        <thead style="border: none">
-            <tr class="d-flex">
-                <th scope="col" class="col-1">Id</th>
-                <th scope="col" class="col-1">Name</th>
-                <th scope="col" class="col-1">Price</th>
-                <th scope="col" class="col-1">Stock</th>
-                <th scope="col" class="col-1"></th>
-            </tr>
-        </thead>
-    `;
-
-    //body
-    const tbody = document.createElement('tbody');
-    shop_table.appendChild(tbody);
-
-    for (const key in shop.items) {
-        const elem = shop.items[key];
-
-        const tr = document.createElement('tr');
-        tr.className = 'd-flex';
-        tbody.appendChild(tr);
-
-        const id = document.createElement('th');
-        id.scope = 'col';
-        id.className = "col-1";
-        id.innerText = elem.id;
-        tr.appendChild(id);
-
-        const name     = document.createElement('td');
-        name.scope     = 'col';
-        name.className = "col-1";
-        name.innerText = elem.name;
-        tr.appendChild(name);
-
-        const price     = document.createElement('td');
-        price.scope     = 'col';
-        price.className = "col-1";
-        price.innerText = elem.price;
-        tr.appendChild(price);
-
-        const stock     = document.createElement('td');
-        stock.scope     = 'col';
-        stock.className = "col-1";
-        stock.innerText = elem.stock;
-        tr.appendChild(stock);
-
-        const td = document.createElement('td');
-        stock.scope     = 'col';
-        stock.className = "col-1";
-        tr.appendChild(td);
-
-        const shop_buy_item_form = document.createElement('form');
-        shop_buy_item_form.className = "btn-group";
-        td.appendChild(shop_buy_item_form);
-
-        const shop_buy_item_qty = document.createElement('input');
-        shop_buy_item_qty.type  = 'number';
-        shop_buy_item_qty.value = '1';
-        shop_buy_item_form.appendChild(shop_buy_item_qty);
-
-        const shop_buy_item_btn =  document.createElement('input');
-        shop_buy_item_btn.type  = 'submit';
-        shop_buy_item_btn.value = 'Buy';
-        shop_buy_item_btn.className = 'btn btn-primary';
-        shop_buy_item_form.appendChild(shop_buy_item_btn);
-
-        const shop_delete_item_btn = document.createElement('input');
-        shop_delete_item_btn.type  = 'submit';
-        shop_delete_item_btn.value = 'X';
-        shop_delete_item_btn.className = 'btn';
-        shop_delete_item_btn.style = 'font-weight: bold; color: red;';
-        td.appendChild(shop_delete_item_btn);
-
-        shop_delete_item_btn.addEventListener('click', (e) => {
-            e.preventDefault();
-            delete shop.items[key];
-            save();
-            set_current_page("shop_delete");
-            shop_view();
-        });
-
-        shop_buy_item_btn.addEventListener('click', (e) => {
-            e.preventDefault();
-            const qty = parseInt(shop_buy_item_qty.value);
-            const stock = parseInt(elem.stock);
-            if (qty <= stock)
-                shop.buy_item(key, qty);
-            set_current_page("reload");
-            shop_view();
-        })
+    function buy(item) {
+        const qty_elem = document.getElementById(`shop_buy_item_${item.id}`);
+        const qty = parseInt(qty_elem.value);
+        const stock = parseInt(item.stock);
+        if (qty <= stock)
+            shop.buy_item(item.id, qty);
+        set_current_page("reload");
+        shop_view();
     }
+
+    const tableConfig = {
+        attributes: {class: "table table-hover"},
+        thead: {
+            attributes: {style: "border: none;"},
+            row_attributes: {class: "d-flex"},
+            data: [
+                {attributes: {scope: "col", class: "col-1"}, data: "Id"},
+                {attributes: {scope: "col", class: "col-1"}, data: "Name"},
+                {attributes: {scope: "col", class: "col-1"}, data: "Price"},
+                {attributes: {scope: "col", class: "col-1"}, data: "Stock"},
+                {attributes: {scope: "col", class: "col-1"}, data: ""},
+            ]
+        },
+        tbody: {
+            attributes: {},
+            data: [],
+        },
+        tfoot: {},
+    };
+
+    for (const item_index in shop.items) {
+        const item = shop.items[item_index];
+        const rval = {
+            attributes: {class: "d-flex"},
+            data: [
+                {attributes: {scope:"col", class:"col-1"}, data: item.id},
+                {attributes: {scope:"col", class:"col-1"}, data: item.name},
+                {attributes: {scope:"col", class:"col-1"}, data: item.price},
+                {attributes: {scope:"col", class:"col-1"}, data: item.stock},
+                {attributes: {scope:"col", class:"col-1"}, dataType: "form", data: make_config(item)},
+            ]
+        };
+        tableConfig.tbody.data.push(rval);
+    };
+
+    const shop_table = new ElemGenerator(tableConfig).create_table();
+    root.appendChild(shop_table);
 }
