@@ -23,7 +23,13 @@ export function basket_view() {
             ]},
         tbody: {attributes: {},
                 data: []},
-        tfoot: [[`total: ${basket.compute_total()}`]]
+        tfoot: {foot_attributes: {},
+                row_attributes: {class: "d-flex"},
+                data:
+                [
+                    {attributes: {scope: "row", class: "col-1"}, data: `total: ${basket.compute_total()}`}
+                ]
+            }
     }
     for (const elem in basket.items) {
         const item = basket.items[elem];

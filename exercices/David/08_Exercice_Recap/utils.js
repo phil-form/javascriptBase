@@ -18,11 +18,14 @@ export function create_table(tableConfig) {
     
     const column_count = tableConfig.thead.length;
     
+    //table config=======================================================
     //set table attributes
     for (const attr in tableConfig.attributes) {
         table.setAttribute(attr, tableConfig.attributes[attr]);
     }
+    //===================================================================
 
+    //head===============================================================
     //set head attributes
     for (const attr in tableConfig.thead.head_attributes) {
         thead.setAttribute(attr, tableConfig.thead.head_attributes[attr]);
@@ -43,7 +46,9 @@ export function create_table(tableConfig) {
         th.innerText = tableConfig.thead.data[colummn].data;
         thead_tr.appendChild(th);
     };
+    //===================================================================
 
+    //body===============================================================
     //set body attributes
     for (const attr in tableConfig.tbody.attributes) {
         tbody.setAttribute(attr, tableConfig.tbody.attributes[attr]);
@@ -74,6 +79,29 @@ export function create_table(tableConfig) {
             td.innerText = item.data;
         }
     }
+    //body===============================================================
+
+    //tfoot==============================================================
+    for (const attr in tableConfig.tfoot.foot_attributes) {
+        tfoot.setAttribute(attr, tableConfig.tfoot.foot_attributes[attr]);
+    }
+    
+    //set row attributes
+    const tfoot_tr = tfoot.insertRow();
+    for (const attr in tableConfig.tfoot.row_attributes) {
+        tfoot_tr.setAttribute(attr, tableConfig.tfoot.row_attributes[attr]);
+    }
+
+    //set attributes for every column and fill data
+    for (const colummn in tableConfig.tfoot.data) {
+        const th = document.createElement('th');
+        for (const attr in tableConfig.tfoot.data[colummn].attributes) {
+            th.setAttribute(attr, tableConfig.tfoot.data[colummn].attributes[attr]);
+        }
+        th.innerText = tableConfig.tfoot.data[colummn].data;
+        tfoot_tr.appendChild(th);
+    };
+    //===================================================================
     return table;
 }
 
