@@ -36,22 +36,20 @@ export function addEditUser(idx)
 {
     let opbody = Utl.clr((idx == -1) ? "Create user" : "Update user");
 
-    let frnew = document.createElement("form");
+    let frnew = document.createElement("form" );
     let tb    = document.createElement("table");
 
     // input fields
-    tb.appendChild(Utl.addTrLblInput("frstnm", "Firstname: "));
-    tb.appendChild(Utl.addTrLblInput("lastnm", "Lastname: " ));
-    tb.appendChild(Utl.addTrLblInput("email" , "E-mail: "   ));
+    let fn = Utl.addTrLblInput(tb, "frstnm", "Firstname: ");
+    let ln = Utl.addTrLblInput(tb, "lastnm", "Lastname: " );
+    let em = Utl.addTrLblInput(tb, "email" , "E-mail: "   );
 
     // button
     let rbtn = document.createElement("tr");
     let cbtn = document.createElement("td");
     cbtn.colSpan = 2;
-    let ibtn = Utl.addButton((idx == -1) ? "Create" : "Update", "newusr", -1, "btn btn-warning"  );
-    let iccl = Utl.addButton(              "Cancel"           , "cancel", -1, "btn btn-secondary");
-    cbtn.appendChild(ibtn);
-    cbtn.appendChild(iccl);
+    let ibtn = Utl.addButton(cbtn, (idx == -1) ? "Create" : "Update", "newusr", -1, "btn btn-warning"  );
+    let iccl = Utl.addButton(cbtn,               "Cancel"           , "cancel", -1, "btn btn-secondary");
     rbtn.appendChild(cbtn);
     tb.appendChild(rbtn);
     frnew.appendChild(tb);
@@ -61,36 +59,21 @@ export function addEditUser(idx)
     if (idx > -1) // edit mode: set values to input fields
     {
         let usr  = users[idx];
-        let fn   = document.getElementById("frstnm");
         fn.value = usr.firstname;
-        let ln   = document.getElementById("lastnm");
         ln.value = usr.lastname;
-        let em   = document.getElementById("email");
         em.value = usr.email;
-
-    } // if (idx > -1)
+    }
 
     ibtn.addEventListener("click", e => {
         e.preventDefault();
-
-        // get list of existing e-mails, to check unicity of new one
-        let emls = {};
-        for (let usr in users)
-        {
-            emls[users[usr].email] = users[usr];
-        }
 
         // get values from screen
         let fnm = document.getElementById("frstnm").value;
         let lnm = document.getElementById("lastnm").value;
         let eml = document.getElementById("email" ).value;
-    
-        // check
-        if (Utl.notCheck(fnm.trim() == "", 'Field "Firstname" must be filled')) return;
-        if (Utl.notCheck(lnm.trim() == "", 'Field "Lastname" must be filled' )) return;
-        if (Utl.notCheck(eml.trim() == "", 'Field "E-mail" must be filled'   )) return;
-        if (Utl.notCheck(eml.match(/[A-Za-z]+[A-Za-z0-9_\-\.]*@[A-Za-z0-9]+\.[a-z]{2,3}/) === null, 'Field "E-mail" is not a valid e-mail adress')) return;
-        if (Utl.notCheck(emls[eml], 'E-mail in field "E-mail" already exists')) return;
+
+        // validate data
+        if (!checkFields(fnm, lnm, eml)) return;
 
         // va bene !
         if (idx == -1)
@@ -112,7 +95,7 @@ export function addEditUser(idx)
         // display all users
         usersList();
 
-    }) // ibtn.addEventListener("click", e
+    }) // ibtn.addEventListener("click", e ...)
 
     iccl.addEventListener("click", e => {
         e.preventDefault();
@@ -120,7 +103,7 @@ export function addEditUser(idx)
         // back to users list
         usersList();
 
-    }) // ibtn.addEventListener("click", e
+    }) // ibtn.addEventListener("click", e ...)
 
 } // addEditUser
 
@@ -131,7 +114,7 @@ export function usersList()
 {
     let opbody = Utl.clr("Users list", true);
 
-    // table
+    // table & header
     let tbl = document.createElement("table");
     tbl.className = "table";
     tbl.id        = "tblusers"
@@ -145,40 +128,29 @@ export function usersList()
     {
         idx += 1;
         let tr = document.createElement("tr");
-        tr.id = idx.toString();
-    
+        tbb.appendChild(tr);
+
         // col 0: select
-        let td0 = document.createElement("td");
-        let btselect = Utl.addButton("Select =>", "select", idx, "btn btn-success");
-        td0.appendChild(btselect);
-        tr.appendChild(td0);
+        let btselect = Utl.addButton(tr, "Select =>", "select", idx, "btn btn-success");
     
         // cols 1 to 4: fields
-        tr.appendChild(Utl.addCell(idx.toString()      ));
-        tr.appendChild(Utl.addCell(users[usr].firstname));
-        tr.appendChild(Utl.addCell(users[usr].lastname ));
-        tr.appendChild(Utl.addCell(users[usr].email    ));
+        Utl.addCell(tr, idx.toString()      );
+        Utl.addCell(tr, users[usr].firstname);
+        Utl.addCell(tr, users[usr].lastname );
+        Utl.addCell(tr, users[usr].email    );
 
         // col 5: buttons
         let td5 = document.createElement("td");
-
-        let btinfo = Utl.addButton("Info"  , "info", idx, "btn btn-info");
-        let btedit = Utl.addButton("Edit"  , "edit", idx, "btn btn-warning");
-        let btdel  = Utl.addButton("Remove", "rem" , idx, "btn btn-danger");
-
-        td5.appendChild(btinfo);
-        td5.appendChild(btedit);
-        td5.appendChild(btdel );
-
         tr.appendChild(td5);
 
-        // add row to body
-        tbb.appendChild(tr);
+        let btinfo = Utl.addButton(td5, "Info"  , "info", idx, "btn btn-info"   );
+        let btedit = Utl.addButton(td5, "Edit"  , "edit", idx, "btn btn-warning");
+        let btdel  = Utl.addButton(td5, "Remove", "rem" , idx, "btn btn-danger" );
 
         btselect.addEventListener("click", e => {
             e.preventDefault();
 
-            let id  = Utl.getLitsId(btinfo);
+            let id  = Utl.getLitsId(btselect);
             let usr = users[id - 1];
             sessionStorage.setItem(Utl.storEmail, usr.email);
             // refresh
@@ -195,14 +167,14 @@ export function usersList()
         btedit.addEventListener("click", e => {
             e.preventDefault();
             
-            let id = Utl.getLitsId(btinfo);
-            editUser(id);
+            let id = Utl.getLitsId(btedit);
+            addEditUser(id);
         })
     
         btdel.addEventListener("click", e => {
             e.preventDefault();
             
-            let id = Utl.getLitsId(btinfo);
+            let id = Utl.getLitsId(btdel);
             delUser(id);
         })
 
@@ -221,12 +193,9 @@ export function usersList()
     tfr.appendChild(tfd1);
 
     // col 5: button
-    let tfd5 = document.createElement("th");
-    let btad = Utl.addButton("Add", "add", 0, "btn btn-primary");
-    tfd5.appendChild(btad);
+    let btad = Utl.addButton(tfr, "Add", "add", 0, "btn btn-primary");
 
-    // cell to row, row to footer, footer to table
-    tfr.appendChild(tfd5);
+    // row to footer, footer to table
     tbf.appendChild(tfr);
     tbl.appendChild(tbf);
 
@@ -245,7 +214,7 @@ function show1user(idx)
 // idx is the row number from list on page: [1 - n] 
 // the index in users is [0 - (n-1)]
 {
-    let opbody = clr("This User");
+    let opbody = Utl.clr("This User");
 
     let usr = users[idx - 1];
     let h3 = document.createElement("h3");
@@ -262,3 +231,33 @@ export function delUser(idx)
     sessionStorage.setItem(Utl.storUsr, JSON.stringify(users));
     usersList();
 }
+
+// check all fields
+// return true if no error
+//        false if any error
+// display message error if any
+// 3 params:
+//   fnm: value of firstname field
+//   lnm: value of lastname field
+//   eml: value of email field
+function checkFields(fnm, lnm, eml)
+{
+    // to check e-mail syntax
+    const grep = /[A-Za-z]+[A-Za-z0-9_\-\.]*@[A-Za-z0-9]+\.[a-z]{2,3}/;
+
+    // get list of existing e-mails, to check unicity of new one
+    let emls = {};
+    for (let usr in users)
+    {
+        emls[users[usr].email] = users[usr];
+    }
+
+    if (Utl.notCheck(fnm.trim()      == ""   , 'Field "Firstname" must be filled'           )) return false;
+    if (Utl.notCheck(lnm.trim()      == ""   , 'Field "Lastname" must be filled'            )) return false;
+    if (Utl.notCheck(eml.trim()      == ""   , 'Field "E-mail" must be filled'              )) return false;
+    if (Utl.notCheck(eml.match(grep) === null, 'Field "E-mail" is not a valid e-mail adress')) return false;
+    if (Utl.notCheck(emls[eml]               , 'E-mail in field "E-mail" already exists'    )) return false;
+
+    return true;
+
+} // function checkFields(fnm, lnm, eml)

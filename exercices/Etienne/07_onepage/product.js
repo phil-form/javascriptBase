@@ -53,26 +53,22 @@ export function productsList()
         let tr = document.createElement("tr");
 
         // col 0: button to remove product
-        let td0   = document.createElement("td");
-        td0.appendChild(Utl.addButton("Delete", "prem", idx, "btn btn-danger"));
-        tr.appendChild(td0);
+        let btprem = Utl.addButton(tr, "Delete", "prem", idx, "btn btn-danger");
 
         // col 1-2: description & price
-        tr.appendChild(Utl.addCell(prods[prd].desc));
-        tr.appendChild(Utl.addCell(prods[prd].prix));
+        Utl.addCell(tr, prods[prd].desc);
+        Utl.addCell(tr, prods[prd].prix);
 
         // col 3: qty & add button
         let td3  = document.createElement("td");
-        let iqty = Utl.addInput("number", "pqty_", idx);
-        td3.appendChild(iqty);
-        td3.appendChild(Utl.addButton("Add", "padd", idx, "btn btn-primary", slctUsr ? "enabled" : "hidden"));
         tr.appendChild(td3);
+        let iqty   = Utl.addInput (td3, "number", "pqty_", idx);
+        let btpadd = Utl.addButton(td3, "Add"   , "padd" , idx, "btn btn-primary", slctUsr ? "enabled" : "hidden");
 
         // add row to table body
         tbbprd.appendChild(tr);
 
         // button remove product from products array
-        let btprem = document.getElementById(`btnprem${idx}`);
         btprem.addEventListener("click", e => {
             e.preventDefault();
 
@@ -88,14 +84,10 @@ export function productsList()
         }) // btprem.addEventListener("click",
     
         // button add qty of product to basket
-        let btpadd = document.getElementById(`btnpadd${idx}`);
         btpadd.addEventListener("click", e => {
             e.preventDefault();
 
-            // check
-            if (Utl.notCheck(iqty.value.trim()    ==  "" , 'Field "Quantity" must be filled'           )) return;
-            if (Utl.notCheck(parseInt(iqty.value) === NaN, 'Field "Quantity" must be is not a number'  )) return;
-            if (Utl.notCheck(parseInt(iqty.value) <=   0 , 'Field "Quantity" must be a positive number')) return;
+            if (!checkQty(iqty.value)) return;
 
             // get product and qty
             let pr  = prods[prd];
@@ -105,7 +97,7 @@ export function productsList()
             if (!Bk.bask[pr.desc])
             {
                 // create empty
-                Bk.bask[pr.desc] = new Panier(slctUsr.email, pr.desc, 0, 0)
+                Bk.bask[pr.desc] = new Bk.Panier(slctUsr.email, pr.desc, 0, 0)
             }
             // update
             Bk.bask[pr.desc].qte  +=    qty ;
@@ -130,30 +122,22 @@ export function productsList()
     let tfr    = document.createElement("tr");
 
     // col 0: button create product
-    let tf0 = document.createElement("td");
-    tf0.appendChild(Utl.addButton("New Product", "nprod", -1, "btn btn-primary"));
-    tfr.appendChild(tf0);
+    let btnnprod = Utl.addButton(tfr, "New Product", "nprod", -1, "btn btn-primary");
 
     // col 1 & 2: desc & price, hidden !
-    let tf1 = document.createElement("td");
-    tf1.appendChild(Utl.addInput("text", "prddesc", -1, "hidden"));
-    tfr.appendChild(tf1);
-
-    let tf2 = document.createElement("td");
-    tf2.appendChild(Utl.addInput("number", "prdprix", -1, "hidden"));
-    tfr.appendChild(tf2);
+    Utl.addInput(tfr, "text"  , "prddesc", -1, "hidden");
+    Utl.addInput(tfr, "number", "prdprix", -1, "hidden");
 
     // col 3: buttons submit & cancel, hidden !
     let tf3 = document.createElement("td");
-    tf3.appendChild(Utl.addButton("Create", "cprod" , -1, "btn btn-primary"  , "hidden"));
-    tf3.appendChild(Utl.addButton("Cancel", "cancel", -1, "btn btn-secondary", "hidden"));
     tfr.appendChild(tf3);
+    let btncprod  = Utl.addButton(tf3, "Create", "cprod" , -1, "btn btn-primary"  , "hidden");
+    let btncancel = Utl.addButton(tf3, "Cancel", "cancel", -1, "btn btn-secondary", "hidden");
 
     tbfprd.appendChild(tfr);
     tbprd.appendChild(tbfprd);
 
     // button new product (left): show fields to fill them
-    let btnnprod = document.getElementById("btnnprod");
     btnnprod.addEventListener("click", e => {
         e.preventDefault();
 
@@ -177,20 +161,16 @@ export function productsList()
     }) // btnnprod.addEventListener("click",
 
     // button create product (right 1): fields filled, create
-    let btncprod = document.getElementById("btncprod");
     btncprod.addEventListener("click", e => {
         e.preventDefault();
 
-        // get values
-        let inpdesc = document.getElementById("prddesc");
-        let inpprix = document.getElementById("prdprix");
-        // check
-        if (Utl.notCheck(inpdesc.value.trim()    ==  "" , 'The field "Description" must be filled'     )) return;
-        if (Utl.notCheck(inpprix.value.trim()    ==  "" , 'The field "Price" must be filled'           )) return;
-        if (Utl.notCheck(parseInt(inpprix.value) === NaN, 'The field "Price" must be a number'         )) return;
-        if (Utl.notCheck(parseInt(inpprix.value) <=   0 , 'The field "Price" must be a positive number')) return;
+        // get and check values
+        let inpdesc = document.getElementById("prddesc").value;
+        let inpprix = document.getElementById("prdprix").value;
+        if (!checkNewProd(inpdesc, inpprix)) return;
+    
         // create product
-        let prd = new Produit(inpdesc.value, parseInt(inpprix.value));
+        let prd = new Produit(inpdesc, parseInt(inpprix));
         // add to array and storage
         prods[prd.desc] = prd;
         sessionStorage.setItem(Utl.storPrd, JSON.stringify(prods));
@@ -200,7 +180,6 @@ export function productsList()
     }) // btncprod.addEventListener("click",
 
     // button cancel product (right 1): fields filled, create
-    let btncancel = document.getElementById("btncancel");
     btncancel.addEventListener("click", e => {
         e.preventDefault();
 
@@ -210,3 +189,37 @@ export function productsList()
     }) // btncancel.addEventListener("click",
 
 } // productsList
+
+// check qty for remove
+// return true if no error
+//        false if any error
+// display message error if any
+// 1 param:
+//   qty: value of prddesc field
+function checkQty(qty)
+{
+    if (Utl.notCheck(         qty.trim() ==  "" , 'Field "Quantity" must be filled'           )) return false;
+    if (Utl.notCheck(parseInt(qty)       === NaN, 'Field "Quantity" must be is not a number'  )) return false;
+    if (Utl.notCheck(parseInt(qty)       <=   0 , 'Field "Quantity" must be a positive number')) return false;
+
+    return true;
+
+} // function checkFields(inpprix, inpprix)
+
+// check all fields for a new product
+// return true if no error
+//        false if any error
+// display message error if any
+// 2 params:
+//   inpdesc: value of prddesc field
+//   inpprix: value of prdprix field
+function checkNewProd(inpdesc, inpprix)
+{
+    if (Utl.notCheck(         inpdesc.trim() ==  "" , 'The field "Description" must be filled'     )) return false;
+    if (Utl.notCheck(         inpprix.trim() ==  "" , 'The field "Price" must be filled'           )) return false;
+    if (Utl.notCheck(parseInt(inpprix)       === NaN, 'The field "Price" must be a number'         )) return false;
+    if (Utl.notCheck(parseInt(inpprix)       <=   0 , 'The field "Price" must be a positive number')) return false;
+
+    return true;
+
+} // function checkFields(inpprix, inpprix)

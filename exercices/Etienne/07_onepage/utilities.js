@@ -7,6 +7,38 @@ export const storPrd   = "opprods";
 export const storBsk   = "opbasket";
 export const storEmail = "opemail";
 
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+// for navbar //////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
+// create a "button" with name "navtxt", where txt is the parameter in lowercases and without any spaces
+// the text on the button is txt, with cases and spaces as given
+export function addMenu(txt)
+{
+    let btn = txt.toLowerCase().replace(" ", "");
+    btn = `nav${btn}`;
+
+    let a    = document.createElement("a");
+    a.href   = "#";
+    let bt   = document.createElement("input");
+    bt.type  = "submit";
+    bt.id    = btn;
+    bt.value = txt;
+    bt.className = "btn btn-link"
+    a.appendChild(bt);
+
+    return a;
+
+} // addMenu
+
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+// beginning of each main function /////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
 // clear all, then set title
 // return the One Page Body balise
 //   tt : not empty: title
@@ -42,27 +74,14 @@ export function clr(tt, usr = false)
 
 } // clr
 
-// create a "button" with name "navtxt", where txt is the parameter in lowercases and without any spaces
-// the text on the button is txt, with cases and spaces as given
-export function addMenu(txt)
-{
-    let btn = txt.toLowerCase().replace(" ", "");
-    btn = `nav${btn}`;
-
-    let a    = document.createElement("a");
-    a.href   = "#";
-    let bt   = document.createElement("input");
-    bt.type  = "submit";
-    bt.id    = btn;
-    bt.value = txt;
-    bt.className = "btn btn-link"
-    a.appendChild(bt);
-
-    return a;
-
-} // addMenu
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+// items of HTML table /////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
 
 // create and return table header
+// 1 param:
 //   titles: array of columns title
 export function tbHeader(titles)
 {
@@ -81,73 +100,13 @@ export function tbHeader(titles)
 
 } // tbHeader
 
-// create and return an array cell with data
-export function addCell(val)
-{
-    let td = document.createElement("td");
-    td.innerText = val;
-
-    return td;
-
-} // addCell
-
-// create and return an input field
-//   tp  : type of input
-//   id  : name and id of input
-//   idx : row number (will be used to addEventListener)
-//   attr: other attribute, without value, like "hidden", "disabled", default no attribute
-export function addInput(tp, id, idx = -1, attr = "")
-{
-    let inp = document.createElement("input");
-    inp.type = tp;
-    inp.name = id;
-    inp.id   = id;
-    if (idx > -1)
-    {
-        inp.id = `${inp.id}${idx}`;
-    }
-    if (attr != "")
-    {
-        inp.setAttribute(attr, "");
-    }
-    
-    return inp;
-
-} // addInput
-
-// create and return "button", with button id composed of: but id idx (without any spaces betwwen parts)
-//   lbl : button text
-//   id  : HTML id (will be used to addEventListener)
-//   idx : row number (will be used to addEventListener)
-//   cls : class, default no class
-//   attr: other attribute, without value, like "hidden", "disabled", default no attribute
-export function addButton(lbl, id, idx, cls = "", attr = "")
-{
-    let btn       = document.createElement("a");
-    btn.type      = "submit";
-    btn.innerText = lbl;
-    btn.id        = `btn${id}`;
-    if (idx > -1)
-    {
-        btn.id = `${btn.id}${idx}`;
-    }
-    if (cls != "")
-    {
-        btn.className = cls;
-    }
-    if (attr != "")
-    {
-        btn.setAttribute(attr, "");
-    }
-
-    return btn;
-
-} // addButton
-
-// create and return a table row with a label and an input
+// create a table row with 2 cells, label in cell 1 and an input in cell 2
+// return the HTML input
+// 3 params:
+//   tb   : table body where to add row
 //   id   : HTML id of input
 //   label: shown in label
-export function addTrLblInput(id, label)
+export function addTrLblInput(tb, id, label)
 {
     let tr = document.createElement("tr");
 
@@ -168,9 +127,124 @@ export function addTrLblInput(id, label)
     td2.appendChild(inp);
     tr.appendChild(td2);
 
-    return tr;
+    tb.appendChild(tr);
+
+    return inp;
 
 } // addTrLblInput
+
+// create an array cell with read only data
+// add it to given row
+// 2 params:
+//   tr : array row where to add new cell
+//   val: data to display
+export function addCell(tr, val)
+{
+    let td = document.createElement("td");
+    td.innerText = val;
+    tr.appendChild(td);
+
+} // addCell
+
+////////////////////////////////////////
+// items to be set in a cell ///////////
+////////////////////////////////////////
+
+// create an input field in a cell
+// return the new HTML input field
+// 5 params:
+//   tbpart: check outerHTML: begin with "<tr>""                : it's a row, add a cell, then input in the cell
+//                            else (must be "<td>", not checked): it's a cell, just add input in given cell
+//   tp    : type of input
+//   id    : name and id of input
+//   idx   : row number (will be used to addEventListener)
+//   attr  : other attribute, without value, like "hidden", "disabled", default no attribute
+export function addInput(tbpart, tp, id, idx = -1, attr = "")
+{
+    let inp = document.createElement("input");
+    if (tbpart.outerHTML.substr(0, 4) == "<tr>")
+    {
+        // row given: create cell, add it to given row, add input field to now cell
+        let ftd = document.createElement("td");
+        ftd.appendChild(inp);
+        tbpart.appendChild(ftd);
+    }
+    else
+    {
+        // row not given, means cell given: add input field to given cell
+        tbpart.appendChild(inp);
+    }
+
+    inp.type = tp;
+    inp.name = id;
+    inp.id   = id;
+    if (idx > -1)
+    {
+        inp.id = `${inp.id}${idx}`;
+    }
+    if (attr != "")
+    {
+        inp.setAttribute(attr, "");
+    }
+    
+    return inp;
+
+} // addInput
+
+// create a "button" in a cell
+// button id composed of: but id idx (without any spaces betwwen parts)
+// return the new HTML button
+// 6 params:
+//   tbpart: check outerHTML: begin with "<tr>""                : it's a row, add a cell, then button in the cell
+//                            else (must be "<td>", not checked): it's a cell, just add button in given cell
+//   lbl   : button text
+//   id    : HTML id (will be used to addEventListener)
+//   idx   : row number (will be used to addEventListener)
+//   cls   : class, default no class
+//   attr  : other attribute, without value, like "hidden", "disabled", default no attribute
+export function addButton(tbpart, lbl, id, idx, cls = "", attr = "")
+{
+    // create button
+    let btn = document.createElement("a");
+
+    if (tbpart.outerHTML.substr(0, 4) == "<tr>")
+    {
+        // row given: create cell, add it to given row, add button to now cell
+        let ftd   = document.createElement("td");
+        ftd.appendChild(btn);
+        tbpart.appendChild(ftd);
+    }
+    else
+    {
+        // row not given, means cell given: add button to given cell
+        tbpart.appendChild(btn);
+    }
+
+    btn.type      = "submit";
+    btn.innerText = lbl;
+    btn.id        = `btn${id}`;
+    if (idx > -1)
+    {
+        btn.id = `${btn.id}${idx}`;
+    }
+    if (cls != "")
+    {
+        btn.className = cls;
+    }
+    if (attr != "")
+    {
+        btn.setAttribute(attr, "");
+    }
+
+    return btn;
+
+} // addButton
+
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+// misc ////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
 
 // get row id from button name
 //   btn: button name, ends with row id
@@ -223,11 +297,17 @@ export function getUserSelected()
 
 } // getUserSelected
 
-// return false if tst is true
-// display erreor message and return true is tst is false
+// called in a "if", with just a return in the "then"
+// 2 params:
+//   tst: bad condition, i.e. for mandatory: data == ""
+//   msg: error message, default is "error ..."
+// tst is true means there is an error
+// returns:
+//   true  if error, means tst is true
+//   false if no error, means tst is false
 export function notCheck(tst, msg = "error ...")
 {
-    if (!tst) return false;
+    if (!tst) return false; // no error
 
     let errBox = document.getElementById("toastBox");
     let errMsg = document.getElementById("toastText");
