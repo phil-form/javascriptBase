@@ -74,28 +74,8 @@ export function showBasket()
             // button remove
             btnrem.addEventListener("click", e => {
                 e.preventDefault();
-
-                // get list row number
-                let idx = Utl.getLitsId(btnrem);
-                // get item from array
-                let itm = Utl.getBaskItmByN(idx);
-                // get and check qty from screen
-                let qty = document.getElementById(`qtyrem${idx}`);
-                if (!checkQty(qty.value)) return;
-
-                // update item in array
-                itm.qte -= parseInt(qty.value);
-                // no more ? remove !
-                if (itm.qte <= 0)
-                {
-                    delete bask[itm.prod];
-                }
-                // update storage
-                sessionStorage.setItem(Utl.storBsk, JSON.stringify(bask));
-                // refresh page
-                showBasket();
-
-            }) // btnrem.addEventListener("click",
+                btnremClick(btnrem)
+            })
 
         } // if (bask[item].email == slctUsr.email)
 
@@ -115,6 +95,33 @@ export function showBasket()
     tf3.innerText = tot;
 
 } // showBasket
+
+// click on remote button
+// 1 param:
+//   btnrem: button remmove
+function btnremClick(btnrem)
+{
+    // get list row number
+    let idx = Utl.getLitsId(btnrem);
+    // get item from array
+    let itm = Utl.getBaskItmByN(idx);
+    // get and check qty from screen
+    let qty = document.getElementById(`qtyrem${idx}`);
+    if (!checkQty(qty.value)) return;
+
+    // update item in array
+    itm.qte -= parseInt(qty.value);
+    // no more ? remove !
+    if (itm.qte <= 0)
+    {
+        delete bask[itm.prod];
+    }
+    // update storage
+    sessionStorage.setItem(Utl.storBsk, JSON.stringify(bask));
+    // refresh page
+    showBasket();
+
+} // btnremClick
 
 // check qty for remove
 // return true if no error

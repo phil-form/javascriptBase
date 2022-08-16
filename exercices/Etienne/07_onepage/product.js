@@ -71,50 +71,15 @@ export function productsList()
         // button remove product from products array
         btprem.addEventListener("click", e => {
             e.preventDefault();
-
-            // delete product: also delete from basket, if any
-            delete Bk.bask[prods[prd].desc];
-            delete prods  [prods[prd].desc];
-            // both modified, both saved
-            sessionStorage.setItem(Utl.storPrd, JSON.stringify(prods  ));
-            sessionStorage.setItem(Utl.storBsk, JSON.stringify(Bk.bask));
-            // refresh page
-            productsList();
-
-        }) // btprem.addEventListener("click",
+            btpremClick(prd)
+        })
     
         // button add qty of product to basket
         btpadd.addEventListener("click", e => {
             e.preventDefault();
-
-            if (!checkQty(iqty.value)) return;
-
-            // get product and qty
-            let pr  = prods[prd];
-            let qty = parseInt(iqty.value);
-            iqty.value = "";    // reset qty on screen for next use
-            // already in basket ?
-            if (!Bk.bask[pr.desc])
-            {
-                // create empty
-                Bk.bask[pr.desc] = new Bk.Panier(slctUsr.email, pr.desc, 0, 0)
-            }
-            // update
-            Bk.bask[pr.desc].qte  +=    qty ;
-            Bk.bask[pr.desc].prix  = pr.prix;
-            // no more ? (means qty < 0)
-            if (Bk.bask[pr.desc].qte <= 0)
-            {
-                // remove
-                delete Bk.bask[pr.desc];
-            }
-            // update basket
-            sessionStorage.setItem(Utl.storBsk, JSON.stringify(Bk.bask));
-            // refresh page
-            productsList();
-
-        }) // btpadd.addEventListener("click",
-    
+            btpaddClick(prd, iqty);
+        })
+        
     } // for (prd in prods)
 
     // footer: to create new product
@@ -125,8 +90,8 @@ export function productsList()
     let btnnprod = Utl.addButton(tfr, "New Product", "nprod", -1, "btn btn-primary");
 
     // col 1 & 2: desc & price, hidden !
-    Utl.addInput(tfr, "text"  , "prddesc", -1, "hidden");
-    Utl.addInput(tfr, "number", "prdprix", -1, "hidden");
+    let inpdesc = Utl.addInput(tfr, "text"  , "prddesc", -1, "hidden");
+    let inpprix = Utl.addInput(tfr, "number", "prdprix", -1, "hidden");
 
     // col 3: buttons submit & cancel, hidden !
     let tf3 = document.createElement("td");
@@ -140,55 +105,106 @@ export function productsList()
     // button new product (left): show fields to fill them
     btnnprod.addEventListener("click", e => {
         e.preventDefault();
-
-        // hide "New Product", show other fields & button
-        let btnnprod  = document.getElementById("btnnprod" );
-        let inpdesc   = document.getElementById("prddesc"  );
-        let inpprix   = document.getElementById("prdprix"  );
-        let btncprod  = document.getElementById("btncprod" );
-        let btncancel = document.getElementById("btncancel");
-        btnnprod.removeAttribute ("enabled"    );
-        btnnprod.setAttribute    ("hidden" , "");
-        inpdesc.removeAttribute  ("hidden"     );
-        inpdesc.setAttribute     ("enabled", "");
-        inpprix.removeAttribute  ("hidden"     );
-        inpprix.setAttribute     ("enabled", "");
-        btncprod.removeAttribute ("hidden"     );
-        btncprod.setAttribute    ("enabled", "");
-        btncancel.removeAttribute("hidden"     );
-        btncancel.setAttribute   ("enabled", "");
-
-    }) // btnnprod.addEventListener("click",
+        btnnprodClick();
+    })
 
     // button create product (right 1): fields filled, create
     btncprod.addEventListener("click", e => {
         e.preventDefault();
+        btncprodClick(inpdesc, inpprix);
+    })
 
-        // get and check values
-        let inpdesc = document.getElementById("prddesc").value;
-        let inpprix = document.getElementById("prdprix").value;
-        if (!checkNewProd(inpdesc, inpprix)) return;
+    // button cancel product (right 2): abort
+    btncancel.addEventListener("click", e => {
+        e.preventDefault();
+        // refresh page
+        productsList();
+    })
+
+} // productsList
+
+// buton remove product, all rows, left
+// 1 param:
+//   prd: product of current row
+function btpremClick(prd)
+{
+    // delete product: also delete from basket, if any
+    delete Bk.bask[prods[prd].desc];
+    delete prods  [prods[prd].desc];
+
+    // both modified, both saved
+    sessionStorage.setItem(Utl.storPrd, JSON.stringify(prods  ));
+    sessionStorage.setItem(Utl.storBsk, JSON.stringify(Bk.bask));
+
+    // refresh page
+    productsList();
+
+} // btpremClick
+
+// button increase qty, all rows, right
+// 2 params:
+//   prd : product of current row
+//   iqty: qty input field
+function btpaddClick(prd, iqty)
+{
+    if (!checkQty(iqty.value)) return;
+
+    // get product and qty
+    let pr  = prods[prd];
+    let qty = parseInt(iqty.value);
+    iqty.value = "";    // reset qty on screen for next use
+    // already in basket ?
+    if (!Bk.bask[pr.desc])
+    {
+        // create empty
+        Bk.bask[pr.desc] = new Bk.Panier(Utl.getUserSelected().email, pr.desc, 0, 0)
+    }
+    // update
+    Bk.bask[pr.desc].qte  +=    qty ;
+    Bk.bask[pr.desc].prix  = pr.prix;
+    // no more ? (means qty < 0)
+    if (Bk.bask[pr.desc].qte <= 0)
+    {
+        // remove
+        delete Bk.bask[pr.desc];
+    }
+    // update basket
+    sessionStorage.setItem(Utl.storBsk, JSON.stringify(Bk.bask));
+    // refresh page
+    productsList();
+
+} // btpaddClick
+
+// button new product, once, footer, left
+// hide "new" button, show other fields
+function btnnprodClick()
+{
+    Utl.showHid("btnnprod" , false);
+    Utl.showHid("prddesc"  , true);
+    Utl.showHid("prdprix"  , true);
+    Utl.showHid("btncprod" , true);
+    Utl.showHid("btncancel", true);
+
+} // btnnprodClick
+
+// button create product, once, footer, right, 1/2
+// 2 params:
+//   inpdesc: description from screen field
+//   inpprix: price from screen field
+function btncprodClick(inpdesc, inpprix)
+{
+        // check values
+        if (!checkNewProd(inpdesc.value, inpprix.value)) return;
     
         // create product
-        let prd = new Produit(inpdesc, parseInt(inpprix));
+        let prd = new Produit(inpdesc.value, parseInt(inpprix.value));
         // add to array and storage
         prods[prd.desc] = prd;
         sessionStorage.setItem(Utl.storPrd, JSON.stringify(prods));
         // refresh page
         productsList();
 
-    }) // btncprod.addEventListener("click",
-
-    // button cancel product (right 1): fields filled, create
-    btncancel.addEventListener("click", e => {
-        e.preventDefault();
-
-        // refresh page
-        productsList();
-
-    }) // btncancel.addEventListener("click",
-
-} // productsList
+} // btncprodClick
 
 // check qty for remove
 // return true if no error

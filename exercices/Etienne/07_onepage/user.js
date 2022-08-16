@@ -66,44 +66,14 @@ export function addEditUser(idx)
 
     ibtn.addEventListener("click", e => {
         e.preventDefault();
-
-        // get values from screen
-        let fnm = document.getElementById("frstnm").value;
-        let lnm = document.getElementById("lastnm").value;
-        let eml = document.getElementById("email" ).value;
-
-        // validate data
-        if (!checkFields(fnm, lnm, eml)) return;
-
-        // va bene !
-        if (idx == -1)
-        {
-            // create
-            let usr = new User(fnm, lnm, eml);
-            users.push(usr);
-        }
-        else
-        {
-            // update
-            let usr = users[idx];
-            usr.firstname = fnm;
-            usr.lastname  = lnm;
-            usr.email     = eml;
-        }
-        // save data
-        sessionStorage.setItem(Utl.storUsr, JSON.stringify(users));
-        // display all users
-        usersList();
-
-    }) // ibtn.addEventListener("click", e ...)
+        ibtnClick(idx);
+    })
 
     iccl.addEventListener("click", e => {
         e.preventDefault();
-
-        // back to users list
+        // cancel: just back to users list
         usersList();
-
-    }) // ibtn.addEventListener("click", e ...)
+    })
 
 } // addEditUser
 
@@ -149,33 +119,22 @@ export function usersList()
 
         btselect.addEventListener("click", e => {
             e.preventDefault();
-
-            let id  = Utl.getLitsId(btselect);
-            let usr = users[id - 1];
-            sessionStorage.setItem(Utl.storEmail, usr.email);
-            // refresh
-            usersList();
+            btselectClick(btselect);
         })
-    
+
         btinfo.addEventListener("click", e => {
             e.preventDefault();
-
-            let id = Utl.getLitsId(btinfo);
-            show1user(id);
+            show1user(Utl.getLitsId(btinfo));
         })
-    
+ 
         btedit.addEventListener("click", e => {
             e.preventDefault();
-            
-            let id = Utl.getLitsId(btedit);
-            addEditUser(id);
+            addEditUser(Utl.getLitsId(btedit));
         })
-    
+
         btdel.addEventListener("click", e => {
             e.preventDefault();
-            
-            let id = Utl.getLitsId(btdel);
-            delUser(id);
+            delUser(Utl.getLitsId(btdel));
         })
 
     } // for (let usr in users)
@@ -204,7 +163,6 @@ export function usersList()
 
     btad.addEventListener("click", e => {
         e.preventDefault();
-
         addEditUser(-1);
     })
 
@@ -231,6 +189,54 @@ export function delUser(idx)
     sessionStorage.setItem(Utl.storUsr, JSON.stringify(users));
     usersList();
 }
+
+// click on button creata / update user
+// 1 param:
+//   idx: index of line
+function ibtnClick(idx)
+{
+    // get values from screen
+    let fnm = document.getElementById("frstnm").value;
+    let lnm = document.getElementById("lastnm").value;
+    let eml = document.getElementById("email" ).value;
+
+    // validate data
+    if (!checkFields(fnm, lnm, eml)) return;
+
+    // va bene !
+    if (idx == -1)
+    {
+        // create
+        let usr = new User(fnm, lnm, eml);
+        users.push(usr);
+    }
+    else
+    {
+        // update
+        let usr = users[idx];
+        usr.firstname = fnm;
+        usr.lastname  = lnm;
+        usr.email     = eml;
+    }
+    // save data
+    sessionStorage.setItem(Utl.storUsr, JSON.stringify(users));
+    // display all users
+    usersList();
+
+} // ibtnClick
+
+// click on button select
+// 1 param:
+//   btselect: button
+function btselectClick(btselect)
+{
+    let id  = Utl.getLitsId(btselect);
+    let usr = users[id - 1];
+    sessionStorage.setItem(Utl.storEmail, usr.email);
+    // refresh
+    usersList();
+
+} // btselectClick
 
 // check all fields
 // return true if no error

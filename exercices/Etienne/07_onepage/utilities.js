@@ -246,6 +246,28 @@ export function addButton(tbpart, lbl, id, idx, cls = "", attr = "")
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
+// show (enable) or hide an element
+// 2 params:
+//   elemId: ID of element
+//   onf   : true : show
+//           false: hide
+export function showHid(elemId, onf)
+{
+    let elem = document.getElementById(elemId);
+    if (onf)
+    {
+        // show: remove hidden, set enabled
+        elem.removeAttribute("hidden");
+        elem.setAttribute   ("enabled", "");
+    }
+    else
+    {
+        // hide: remove enabled, set hidden
+        elem.removeAttribute("enabled");
+        elem.setAttribute   ("hidden", "");
+    }
+} // showHid
+
 // get row id from button name
 //   btn: button name, ends with row id
 export function getLitsId(btn)
