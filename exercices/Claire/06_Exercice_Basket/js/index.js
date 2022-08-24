@@ -1,29 +1,31 @@
-import { getAsHtmlRow, loadBasket, addToBasket, computeTotal, emptyBasket } from './basket.js'
+import { Basket } from './basket.js'
 import { products, addProduct, deleteProduct } from './product.js'
 
 const basketTable = document.getElementById('basket_data');
 const productsTable = document.getElementById('products_data');
 
+let basket = new Basket();
+
 const clearBasketBtn = document.getElementById('clear_basket');
 clearBasketBtn.addEventListener('click', (e) => {
     e.preventDefault();
-    emptyBasket();
-    refreshBasket();
+    basket.empty();
+    renderBasket();
 });
 
 const newProductForm = document.getElementById('product-form');
 newProductForm.addEventListener('submit', (e) => {
     e.preventDefault();
     addProduct(e.target['product-name'].value, parseInt(e.target['product-price'].value));
-    refreshProducts();
+    renderProducts();
     newProductForm.reset();
 });
 
-refreshProducts();
-refreshBasket();
+renderProducts();
+renderBasket();
 
-function refreshProducts() {
-    clearProducts();
+function renderProducts() {
+    clearProductsView();
     for (const productName in products) {
         productsTable.appendChild(products[productName].getAsHtmlRow());
         const insertBtn = document.forms[`product-form-${productName}`].elements['insert'];
@@ -31,8 +33,8 @@ function refreshProducts() {
             e.preventDefault();
             const quantity = parseInt(document.forms[`product-form-${productName}`].elements['quantity'].value);
             if (quantity > 0) {
-                addToBasket(product, quantity);
-                refreshBasket()
+                basket.add(products[productName], quantity);
+                renderBasket()
             } else {
                 alert('Quantity must be positive !');
             }
@@ -41,29 +43,27 @@ function refreshProducts() {
         deleteBtn.addEventListener( 'click', (e) => {
             e.preventDefault();
             deleteProduct(productName);
-            refreshProducts();
+            renderProducts();
         });
     }
 }
 
-function refreshBasket() {
-    let basket = loadBasket();
+function renderBasket() {
     
     const totalInput = document.getElementById('total_input');
-    totalInput.value = computeTotal(basket);
+    totalInput.value = basket.total();
 
-    clearBasket();
-    for (let item of basket) {
-        console.log(item);
-        basketTable.appendChild(getAsHtmlRow(item));
+    clearBasketView();
+    for (let item of basket.items) {
+        basketTable.appendChild(item.getAsHtmlRow());
     }
 
 }
 
-function clearBasket() {
+function clearBasketView() {
     basketTable.innerHTML = '';
 }
 
-function clearProducts() {
+function clearProductsView() {
     productsTable.innerHTML = '';
 }

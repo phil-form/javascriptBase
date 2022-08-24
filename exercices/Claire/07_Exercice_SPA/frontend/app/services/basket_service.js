@@ -1,11 +1,13 @@
+import { BaseService } from "./base_service.js";
+import { BasketItem } from "../models/basket_item.js"
 
-
-export class Basket {
+export class BasketService extends BaseService {
 
     constructor() {
+        let config = {};
+        super(config);
         this.load();
     }
-
 
     load() {
         const basket = JSON.parse(localStorage.getItem('basket'));
@@ -16,11 +18,16 @@ export class Basket {
         console.log('basket loaded from localstorage')
     }
 
-    add(product, quantity) {
+    /**
+     * 
+     * @param {Product} product 
+     * @param {number} quantity 
+     */
+    add(product, quantity, update=false) {
         let found = false;
         for(let item of this.items) {
             if(item.product.name == product.name) {
-                item.quantity += quantity;
+                item.quantity = update ? quantity : item.quantity + quantity
                 found = true;
             }
         }
@@ -30,8 +37,13 @@ export class Basket {
         localStorage.setItem('basket', JSON.stringify(this.items))
     }
 
-    remove(product, quantity) {
-        
+    delete(product) {
+        for(let i in this.items) {
+            if(product.name == this.items[i].product.name) {
+                this.items.splice(i, 1)
+            }
+        }
+        localStorage.setItem('basket', JSON.stringify(this.items))
     }
 
     total() {
@@ -45,28 +57,6 @@ export class Basket {
     empty() {
         localStorage.removeItem('basket');
         this.items = [];
-    }
-
-}
-
-class BasketItem {
-
-    constructor(product, quantity) {
-        this.product = product;
-        this.quantity = quantity;
-    }
-
-    getAsHtmlRow() {
-        const tr = document.createElement('tr');
-    
-        const cellName = tr.insertCell();
-        const cellPrice = tr.insertCell();
-        const cellQty = tr.insertCell();
-        cellName.innerText = this.product.name;
-        cellPrice.innerText = this.product.price;
-        cellQty.innerText = this.quantity;
-
-        return tr;
     }
 
 }
